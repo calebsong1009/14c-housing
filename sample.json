@@ -1,6 +1,0 @@
-{
-  "samples": [
-    { "family_id": "family_1", "bundle_id": "bundle_1", "pass": true },
-    { "family_id": "family_2", "bundle_id": "bundle_2", "pass": false },
-  ]
-}
