@@ -1,0 +1,9 @@
+{
+  "samples": [
+    { "family_id": "family_1", "bundle_id": "bundle_1", "pass": true },
+    { "family_id": "family_2", "bundle_id": "bundle_2", "pass": true },
+    { "family_id": "family_3", "bundle_id": "bundle_3", "pass": false },
+    { "family_id": "family_4", "bundle_id": "bundle_4", "pass": false },
+    { "family_id": "family_5", "bundle_id": "bundle_5", "pass": false }
+  ]
+}

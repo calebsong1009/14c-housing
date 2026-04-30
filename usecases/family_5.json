@@ -1,0 +1,85 @@
+{
+  "family_id": "family_5",
+  "personal_information": {
+    "name": "Carlos Rivera",
+    "address": "19 Birch Street",
+    "town": "Lynn",
+    "zip": "01901",
+    "phone_home": null,
+    "phone_work": null,
+    "phone_cell": "781-555-0637",
+    "email": "crivera@email.com",
+    "ever_owned_home": false,
+    "home_sold_date": null,
+    "section_8_or_housing_voucher": false,
+    "bedroom_size": "two_bedroom",
+    "requires_wheelchair_accessible_unit": false,
+    "requires_special_accommodation": false,
+    "special_accommodation_details": null
+  },
+  "household": {
+    "total_size": 2,
+    "members": [
+      { "name": "Carlos Rivera", "relationship": "applicant", "age": 38 },
+      { "name": "Maria Rivera", "relationship": "spouse", "age": 35 }
+    ]
+  },
+  "financials": {
+    "applicant_monthly_base_income_gross": 3100,
+    "applicant_other_income_type": null,
+    "applicant_other_income_amount": null,
+    "co_applicant_monthly_base_income_gross": 2400,
+    "co_applicant_other_income_type": null,
+    "co_applicant_other_income_amount": null,
+    "total_monthly_income": 5500
+  },
+  "assets": {
+    "checking": 3400,
+    "savings": 6100,
+    "debit_card": null,
+    "stocks_bonds_tbills_cd_mutual_funds": null,
+    "ira_401k_keogh": null,
+    "retirement_pension_withdrawable": null,
+    "revocable_trusts": null,
+    "equity_rental_or_capital_investments": null,
+    "cash_value_life_insurance": null,
+    "total_assets": 9500
+  },
+  "employment": {
+    "employer_name": "Rivera Landscaping",
+    "employer_address": "88 Commerce Way",
+    "employer_city_state_zip": "Lynn, MA 01901",
+    "date_of_hire": "2017-04-20",
+    "annual_wage_base": 37200,
+    "annual_wage_additional": 2400
+  },
+  "eligibility_checklist": {
+    "household_member_identification": { "checked": false, "if_applicable": false, "require": "any" },
+    "section_8_or_housing_voucher": { "checked": false, "if_applicable": true, "require": "any" },
+    "proof_of_local_preference": { "checked": true, "if_applicable": true, "require": "any" },
+    "special_accommodation_documentation": { "checked": false, "if_applicable": true, "require": "any" },
+    "pay_stubs": { "checked": true, "if_applicable": false, "require": "all" },
+    "employment_offer_letter": { "checked": false, "if_applicable": true, "require": "all" },
+    "separation_letter": { "checked": false, "if_applicable": true, "require": "all" },
+    "benefit_letter": { "checked": false, "if_applicable": true, "require": "any" },
+    "child_support_alimony": { "checked": false, "if_applicable": true, "require": "any" },
+    "self_employment": { "checked": false, "if_applicable": true, "require": "all" },
+    "federal_tax_returns_2024": { "checked": true, "if_applicable": false, "require": "all" },
+    "w2_1099r": { "checked": true, "if_applicable": false, "require": "any" },
+    "interest_dividends_income": { "checked": false, "if_applicable": true, "require": "all" },
+    "checking_account_statements": { "checked": true, "if_applicable": false, "require": "all" },
+    "prepaid_debit_card_statements": { "checked": false, "if_applicable": true, "require": "all" },
+    "digital_wallet_statements": { "checked": false, "if_applicable": true, "require": "any" },
+    "savings_account_statements": { "checked": true, "if_applicable": true, "require": "all" },
+    "revocable_trusts": { "checked": false, "if_applicable": true, "require": "all" },
+    "equity_rental_or_capital_investments": { "checked": false, "if_applicable": true, "require": "all" },
+    "investment_accounts": { "checked": false, "if_applicable": true, "require": "all" },
+    "retirement_accounts": { "checked": false, "if_applicable": true, "require": "all" },
+    "life_insurance_cash_value": { "checked": false, "if_applicable": true, "require": "any" },
+    "personal_property_investment": { "checked": false, "if_applicable": true, "require": "all" },
+    "lump_sum_one_time_receipts": { "checked": false, "if_applicable": true, "require": "all" },
+    "student_status_proof": { "checked": false, "if_applicable": true, "require": "any" },
+    "proof_of_pregnancy": { "checked": false, "if_applicable": true, "require": "all" },
+    "divorce_or_separation": { "checked": false, "if_applicable": true, "require": "all" }
+  }
+}

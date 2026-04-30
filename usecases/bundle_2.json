@@ -1,0 +1,21 @@
+{
+  "bundle_id": "bundle_2",
+  "documents": [
+    "birth_certificate.pdf",
+    "driver_license.pdf",
+    "section_8_housing_voucher.pdf",
+    "utility_bill.pdf",
+    "pay_stub_1.pdf",
+    "pay_stub_2.pdf",
+    "pay_stub_3.pdf",
+    "pay_stub_4.pdf",
+    "pay_stub_5.pdf",
+    "benefit_letter_social_security.pdf",
+    "child_support_none_received.pdf",
+    "federal_tax_return_2024.pdf",
+    "w2_2024.pdf",
+    "checking_statement_march2025.pdf",
+    "savings_statement_march2025.pdf",
+    "retirement_accounts.pdf"
+  ]
+}

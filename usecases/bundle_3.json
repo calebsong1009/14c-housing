@@ -1,0 +1,15 @@
+{
+  "bundle_id": "bundle_3",
+  "documents": [
+    "birth_certificate.pdf",
+    "voter_registration.pdf",
+    "pay_stub_1.pdf",
+    "pay_stub_2.pdf",
+    "pay_stub_3.pdf",
+    "child_support_none_received.pdf",
+    "federal_tax_return_2024.pdf",
+    "w2_2024.pdf",
+    "checking_statement_march2025.pdf",
+    "savings_statement_march2025.pdf"
+  ]
+}
