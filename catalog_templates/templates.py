@@ -1,5 +1,5 @@
 from typing import Literal, Union
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 # ============================================================
 # DOCUMENT SPECIFICATION DSL
@@ -14,7 +14,9 @@ from pydantic import BaseModel, Field
 class DocumentLeaf(BaseModel):
     type: Literal["document"]
     document_type: str  # references DocumentTypeCatalog (e.g., "paystub")
-    notes: str | None = None  # human-readable detail, e.g. "5 consecutive"
+    # Advisory only in MVP: the engine checks presence, not "5 consecutive",
+    # recency, or coverage windows. See catalog_templates/README.md.
+    notes: str | None = None
 
 class AllOf(BaseModel):
     type: Literal["all_of"]
@@ -35,12 +37,15 @@ OneOf.model_rebuild()
 # Small closed vocabulary of predicates over household data.
 # Combinators: any, all, not. Leaves: comparison predicates.
 
+PredicateValue = int | float | str | bool | list[int | float | str | bool] | None
+
+
 class Predicate(BaseModel):
     type: Literal["predicate"]
     field: str           # dotted path into household data, e.g. "applicant.income_sources"
     operator: Literal["equals", "not_equals", "contains",
                       "greater_than", "less_than", "in", "exists"]
-    value: object | None = None
+    value: PredicateValue = None
 
 class Any_(BaseModel):
     type: Literal["any"]
@@ -75,6 +80,12 @@ class SourceReference(BaseModel):
 # TRIGGER CATALOG
 # ============================================================
 
+# Applicant and co-applicant live outside `household.members[]` in the
+# input schema, so they are first-class scopes — not addressable via
+# per_member_scope. See catalog_templates/README.md.
+InstanceScope = Literal["household", "applicant", "co_applicant", "per_member"]
+
+
 class Trigger(BaseModel):
     trigger_id: str
     description: str
@@ -82,11 +93,20 @@ class Trigger(BaseModel):
     # When the trigger fires, which requirements get instantiated.
     # Many-to-many: one trigger → multiple requirements.
     emits_requirements: list[str]    # list of requirement_ids
-    # Per-member instantiation: if set, the trigger fires once per
-    # household member matching the inner condition (flattened).
-    # If null, fires once per household.
+    instance_scope: InstanceScope = "household"
+    # Only consulted when instance_scope == "per_member". Predicate.field
+    # inside per_member_scope is interpreted relative to the member object
+    # (e.g. "age", "relationship"), not the household root.
     per_member_scope: Condition | None = None
     source_reference: SourceReference
+
+    @model_validator(mode="after")
+    def _scope_matches_per_member(self) -> "Trigger":
+        if self.instance_scope == "per_member" and self.per_member_scope is None:
+            raise ValueError("per_member_scope is required when instance_scope == 'per_member'")
+        if self.instance_scope != "per_member" and self.per_member_scope is not None:
+            raise ValueError("per_member_scope must be None when instance_scope != 'per_member'")
+        return self
 
 
 # ============================================================
@@ -110,5 +130,16 @@ class RequirementInstance(BaseModel):
     instance_id: str                 # e.g. "wage_income_proof::member_002"
     requirement_id: str              # references catalog
     triggered_by: list[str]          # trigger_ids that emitted this (audit)
-    applies_to_member: str | None = None  # member_id, or None for household-level
+    applies_to_role: Literal["household", "applicant", "co_applicant", "member"]
+    # Engine-minted stable hash of the member tuple. Required iff
+    # applies_to_role == "member"; must be None otherwise.
+    applies_to_member: str | None = None
     document_spec: DocumentSpec      # copied from catalog (pre-resolved)
+
+    @model_validator(mode="after")
+    def _member_hash_matches_role(self) -> "RequirementInstance":
+        if self.applies_to_role == "member" and self.applies_to_member is None:
+            raise ValueError("applies_to_member is required when applies_to_role == 'member'")
+        if self.applies_to_role != "member" and self.applies_to_member is not None:
+            raise ValueError("applies_to_member must be None when applies_to_role != 'member'")
+        return self
