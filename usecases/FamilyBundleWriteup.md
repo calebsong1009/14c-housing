@@ -21,11 +21,11 @@ Synthetic dataset of 5 families and 5 document bundles generated from the Maple 
 
 | Bundle | Documents | Status | Gap |
 |--------|-----------|--------|-----|
-| bundle_1 | 12 | PASS | None |
+| bundle_1 | 13 | PASS | None |
 | bundle_2 | 16 | PASS | None |
-| bundle_3 | 10 | FAIL | pay_stub_4.pdf, pay_stub_5.pdf |
+| bundle_3 | 12 | FAIL | pay_stub_4.pdf, pay_stub_5.pdf |
 | bundle_4 | 11 | FAIL | federal_tax_return_2024.pdf, w2_2024.pdf |
-| bundle_5 | 10 | FAIL | Any household member ID |
+| bundle_5 | 10 | FAIL | Any household member ID (needs 2 for 2-person household) |
 
 ---
 

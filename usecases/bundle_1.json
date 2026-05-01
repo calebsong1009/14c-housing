@@ -2,6 +2,7 @@
   "bundle_id": "bundle_1",
   "documents": [
     "birth_certificate.pdf",
+    "birth_certificate_2.pdf",
     "lease.pdf",
     "pay_stub_1.pdf",
     "pay_stub_2.pdf",

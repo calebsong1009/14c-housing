@@ -2,6 +2,9 @@
   "bundle_id": "bundle_1",
   "documents": [
     "birth_certificate.pdf",
+    "birth_certificate_2.pdf",
+    "birth_certificate_3.pdf",
+    "birth_certificate_4.pdf",
     "driver_license.pdf",
     "social_security_card.pdf",
     "passport.pdf",
