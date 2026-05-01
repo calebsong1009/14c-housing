@@ -9,7 +9,7 @@ The schema is the contract. The catalog *content* (the actual list of triggers a
 
 ## Engine flow
 
-1. Load household data (shape: `eval_set_template_jsons/application_template.json`) and the uploaded document bundle.
+1. Load household data (shape: `eval_set_template_jsons/family_template.json`) and the uploaded document bundle.
 2. For each `Trigger`, evaluate `activation` against household data.
 3. If fired, emit one or more `RequirementInstance`s based on `instance_scope` (see below).
 4. For each instance, recursively evaluate its `document_spec` against the bundle. A `document` leaf is satisfied iff a matching document exists (filtered by `applies_to_member` when the role is `member`); `all_of` requires every child; `one_of` requires at least one.
@@ -17,7 +17,7 @@ The schema is the contract. The catalog *content* (the actual list of triggers a
 
 ## Input contract
 
-The engine consumes household data shaped like `eval_set_template_jsons/application_template.json`. Synthetic data generators **must** conform to the following format conventions, because the predicate engine does no coercion:
+The engine consumes household data shaped like `eval_set_template_jsons/family_template.json`. Synthetic data generators **must** conform to the following format conventions, because the predicate engine does no coercion:
 
 - Monetary amounts are JSON numbers (not strings, not "$1,200").
 - Dates are ISO-8601 strings (`"YYYY-MM-DD"`). With this format, `greater_than` / `less_than` over strings yields correct chronological ordering.
@@ -29,7 +29,7 @@ If the parser ever changes upstream, normalize before handing data to the engine
 
 ## Self-attestation model
 
-The Danvers application (PDF pages 18–20, "Required Personal Identification and Income Verification Documents") is itself a self-attestation checklist: the applicant **initials** each item that applies. The `eligibility_checklist.*` booleans in `application_template.json` mirror that section exactly. So:
+The Danvers application (PDF pages 18–20, "Required Personal Identification and Income Verification Documents") is itself a self-attestation checklist: the applicant **initials** each item that applies. The `eligibility_checklist.*` booleans in `family_template.json` mirror that section exactly. So:
 
 - `eligibility_checklist.*` is **engine input**, not engine output. It is the form's authoritative signal for items the form does not capture as structured fields.
 - The engine validates that the **documents match the checklist**, not that the checklist is honest. A dishonest checklist is out of scope.
@@ -98,5 +98,5 @@ The DSL deliberately does not enforce any of the following. They are all candida
 ## Files
 
 - `templates.py` — Pydantic models for `Trigger`, `DocumentSetRequirement`, `RequirementInstance`, and the document/condition DSLs.
-- `../eval_set_template_jsons/application_template.json` — input schema (read-only reference).
+- `../eval_set_template_jsons/family_template.json` — input schema (read-only reference).
 - `../Danvers Maple Sq FCFS Application 2026.pdf` — the form whose semantics this catalog encodes (read-only reference).
