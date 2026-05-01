@@ -1,0 +1,177 @@
+[
+  {
+    "trigger_id": "trig_household_member_id",
+    "description": "Require household member identification for every application",
+    "activation": {
+      "type": "predicate",
+      "field": "household.total_size",
+      "operator": "greater_than",
+      "value": 0
+    },
+    "emits_requirements": ["req_household_member_id"],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Required Documents — Identification"
+    }
+  },
+  {
+    "trigger_id": "trig_pay_stubs",
+    "description": "Require pay stubs when applicant self-attests to wage income",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.pay_stubs.checked",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": ["req_pay_stubs"],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Income Verification — Pay Stubs"
+    }
+  },
+  {
+    "trigger_id": "trig_federal_tax_returns",
+    "description": "Require federal tax returns — BUG: fires on employment presence instead of checklist",
+    "activation": {
+      "type": "predicate",
+      "field": "employment.date_of_hire",
+      "operator": "exists"
+    },
+    "emits_requirements": ["req_federal_tax_returns"],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Income Verification — Tax Returns"
+    }
+  },
+  {
+    "trigger_id": "trig_w2_1099r",
+    "description": "Require W-2 or 1099-R when checklist is checked",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.w2_1099r.checked",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": ["req_w2_1099r"],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Income Verification — W2/1099-R"
+    }
+  },
+  {
+    "trigger_id": "trig_section_8_voucher",
+    "description": "Require Section 8 voucher copy when checklist is checked",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.section_8_or_housing_voucher.checked",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": ["req_section_8_voucher"],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Housing Preference Documentation"
+    }
+  },
+  {
+    "trigger_id": "trig_local_preference",
+    "description": "Require proof of local preference when checklist is checked",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.proof_of_local_preference.checked",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": ["req_local_preference"],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Local Preference Documentation"
+    }
+  },
+  {
+    "trigger_id": "trig_child_support",
+    "description": "Require child support/alimony documentation when checklist is checked",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.child_support_alimony.checked",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": ["req_child_support"],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Income Verification — Child Support/Alimony"
+    }
+  },
+  {
+    "trigger_id": "trig_checking_account",
+    "description": "Require checking account statements when checklist is checked",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.checking_account_statements.checked",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": ["req_checking_account"],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Asset Verification — Checking"
+    }
+  },
+  {
+    "trigger_id": "trig_savings_account",
+    "description": "Require savings account statements when checklist is checked",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.savings_account_statements.checked",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": ["req_savings_account"],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Asset Verification — Savings"
+    }
+  },
+  {
+    "trigger_id": "trig_benefit_letter",
+    "description": "Require benefit award letter when checklist is checked",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.benefit_letter.checked",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": ["req_benefit_letter"],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Income Verification — Benefits"
+    }
+  },
+  {
+    "trigger_id": "trig_retirement_accounts",
+    "description": "Require retirement account statements when checklist is checked",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.retirement_accounts.checked",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": ["req_retirement_accounts"],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Asset Verification — Retirement"
+    }
+  }
+]

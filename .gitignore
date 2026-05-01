@@ -1,2 +1,5 @@
 CLAUDE.md
 catalog_templates/__pycache__/
+.env
+**/__pycache__/
+**/*.pyc

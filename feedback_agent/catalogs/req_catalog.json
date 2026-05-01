@@ -1,0 +1,157 @@
+[
+  {
+    "requirement_id": "req_household_member_id",
+    "description": "Government-issued photo ID — BUG: only accepts birth certificate, should also accept driver_license and passport",
+    "document_spec": {
+      "type": "document",
+      "document_type": "birth_certificate.pdf",
+      "notes": "Any government-issued photo identification accepted"
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Required Documents — Identification"
+    }
+  },
+  {
+    "requirement_id": "req_pay_stubs",
+    "description": "Consecutive pay stubs — BUG: requires 5 stubs, should require only 3",
+    "document_spec": {
+      "type": "all_of",
+      "children": [
+        {"type": "document", "document_type": "pay_stub_1.pdf"},
+        {"type": "document", "document_type": "pay_stub_2.pdf"},
+        {"type": "document", "document_type": "pay_stub_3.pdf"},
+        {"type": "document", "document_type": "pay_stub_4.pdf"},
+        {"type": "document", "document_type": "pay_stub_5.pdf"}
+      ]
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Income Verification — Pay Stubs"
+    }
+  },
+  {
+    "requirement_id": "req_federal_tax_returns",
+    "description": "Most recent federal tax return (2024)",
+    "document_spec": {
+      "type": "document",
+      "document_type": "federal_tax_return_2024.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Income Verification — Tax Returns"
+    }
+  },
+  {
+    "requirement_id": "req_w2_1099r",
+    "description": "Most recent W-2 or 1099-R",
+    "document_spec": {
+      "type": "one_of",
+      "children": [
+        {"type": "document", "document_type": "w2_2024.pdf"},
+        {"type": "document", "document_type": "1099r_2024.pdf"}
+      ]
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Income Verification — W2/1099-R"
+    }
+  },
+  {
+    "requirement_id": "req_section_8_voucher",
+    "description": "Copy of Section 8 housing voucher",
+    "document_spec": {
+      "type": "document",
+      "document_type": "section_8_housing_voucher.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Housing Preference Documentation"
+    }
+  },
+  {
+    "requirement_id": "req_local_preference",
+    "description": "Proof of local preference (utility bill, voter registration, or lease)",
+    "document_spec": {
+      "type": "one_of",
+      "children": [
+        {"type": "document", "document_type": "utility_bill.pdf"},
+        {"type": "document", "document_type": "voter_registration.pdf"},
+        {"type": "document", "document_type": "lease.pdf"}
+      ]
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Local Preference Documentation"
+    }
+  },
+  {
+    "requirement_id": "req_child_support",
+    "description": "Child support or alimony documentation (award letter or zero-income statement)",
+    "document_spec": {
+      "type": "one_of",
+      "children": [
+        {"type": "document", "document_type": "child_support_received.pdf"},
+        {"type": "document", "document_type": "child_support_none_received.pdf"}
+      ]
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Income Verification — Child Support/Alimony"
+    }
+  },
+  {
+    "requirement_id": "req_checking_account",
+    "description": "Most recent checking account statement",
+    "document_spec": {
+      "type": "document",
+      "document_type": "checking_statement_march2025.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Asset Verification — Checking"
+    }
+  },
+  {
+    "requirement_id": "req_savings_account",
+    "description": "Most recent savings account statement",
+    "document_spec": {
+      "type": "document",
+      "document_type": "savings_statement_march2025.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Asset Verification — Savings"
+    }
+  },
+  {
+    "requirement_id": "req_benefit_letter",
+    "description": "Benefit award letter (Social Security, disability, pension, etc.)",
+    "document_spec": {
+      "type": "document",
+      "document_type": "benefit_letter_social_security.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Income Verification — Benefits"
+    }
+  },
+  {
+    "requirement_id": "req_retirement_accounts",
+    "description": "Most recent retirement account statement",
+    "document_spec": {
+      "type": "document",
+      "document_type": "retirement_accounts.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "section": "Asset Verification — Retirement"
+    }
+  }
+]
