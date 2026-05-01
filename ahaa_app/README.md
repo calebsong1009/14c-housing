@@ -1,4 +1,4 @@
-# Document Eligibility Checker MVP
+# AHAA MVP
 
 ## Files
 - `app.py`: Streamlit UI
