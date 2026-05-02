@@ -58,8 +58,6 @@
     "proof_of_local_preference": true,
     "special_accommodation_documentation": false,
     "pay_stubs": true,
-    "employment_offer_letter": false,
-    "separation_letter": true,
     "benefit_letter": false,
     "child_support_alimony": true,
     "self_employment": false,
