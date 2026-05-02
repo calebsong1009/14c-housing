@@ -27,7 +27,7 @@
     "child_support_court_document.pdf",
     "divorce_papers.pdf",
     "self_employed_income_statement.pdf",
-    "last_3_months_business_and_checking_statements.pdf",
+    "last_3_months_business_checking_and_savings_statements.pdf",
     "federal_tax_returns_2022.pdf",
     "federal_tax_returns_2023.pdf",
     "federal_tax_return_2024.pdf",
@@ -49,6 +49,10 @@
     "student_letter_from_school.pdf",
     "appendix_A_eligibility.pdf",
     "proof_of_pregnancy.pdf",
-    "proof_of_divorce.pdf"
+    "proof_of_divorce.pdf",
+    "affidavit_and_disclosure_form.pdf",
+    "application_tips_signed.pdf",
+    "release_of_information_authorization.pdf",
+    "custody_child_support_affidavit.pdf"
   ]
 }
