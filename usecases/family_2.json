@@ -77,14 +77,6 @@
       "checked": true,
       "require": "all"
     },
-    "employment_offer_letter": {
-      "checked": false,
-      "require": "all"
-    },
-    "separation_letter": {
-      "checked": false,
-      "require": "all"
-    },
     "benefit_letter": {
       "checked": true,
       "require": "any"
@@ -100,6 +92,10 @@
     "federal_tax_returns_2024": {
       "checked": true,
       "require": "all"
+    },
+    "irs_non_filing_verification": {
+      "checked": false,
+      "require": "any"
     },
     "w2_1099r": {
       "checked": true,
