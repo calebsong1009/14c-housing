@@ -21,11 +21,13 @@ Synthetic dataset of 5 families and 5 document bundles generated from the Maple 
 
 | Bundle | Documents | Status | Gap |
 |--------|-----------|--------|-----|
-| bundle_1 | 13 | PASS | None |
-| bundle_2 | 16 | PASS | None |
-| bundle_3 | 12 | FAIL | pay_stub_4.pdf, pay_stub_5.pdf |
-| bundle_4 | 11 | FAIL | federal_tax_return_2024.pdf, w2_2024.pdf |
-| bundle_5 | 10 | FAIL | Any household member ID (needs 2 for 2-person household) |
+| bundle_1 | 17 | PASS | None |
+| bundle_2 | 19 | PASS | None |
+| bundle_3 | 17 | FAIL | pay_stub_4.pdf, pay_stub_5.pdf |
+| bundle_4 | 15 | FAIL | federal_tax_return_2024.pdf, w2_2024.pdf |
+| bundle_5 | 15 | FAIL | Any household member ID (needs 2 for 2-person household) |
+
+> Every bundle includes the three universal documents (`affidavit_and_disclosure_form.pdf`, `application_tips_signed.pdf`, `release_of_information_authorization.pdf`) that the always-on triggers `trig_affidavit_and_disclosure`, `trig_application_tips`, and `trig_release_of_information` require for any non-empty household.
 
 ---
 

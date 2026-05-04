@@ -67,109 +67,31 @@
     "annual_wage_additional": null
   },
   "eligibility_checklist": {
-    "household_member_identification": {
-      "checked": true,
-      "require": "any"
-    },
-    "section_8_or_housing_voucher": {
-      "checked": false,
-      "require": "any"
-    },
-    "proof_of_local_preference": {
-      "checked": true,
-      "require": "any"
-    },
-    "special_accommodation_documentation": {
-      "checked": false,
-      "require": "any"
-    },
-    "pay_stubs": {
-      "checked": true,
-      "require": "all"
-    },
-    "benefit_letter": {
-      "checked": false,
-      "require": "any"
-    },
-    "child_support_alimony": {
-      "checked": true,
-      "require": "any"
-    },
-    "self_employment": {
-      "checked": false,
-      "require": "all"
-    },
-    "federal_tax_returns_2024": {
-      "checked": true,
-      "require": "all"
-    },
-    "irs_non_filing_verification": {
-      "checked": false,
-      "require": "any"
-    },
-    "w2_1099r": {
-      "checked": true,
-      "require": "any"
-    },
-    "interest_dividends_income": {
-      "checked": false,
-      "require": "all"
-    },
-    "checking_account_statements": {
-      "checked": true,
-      "require": "all"
-    },
-    "prepaid_debit_card_statements": {
-      "checked": false,
-      "require": "all"
-    },
-    "digital_wallet_statements": {
-      "checked": false,
-      "require": "any"
-    },
-    "savings_account_statements": {
-      "checked": true,
-      "require": "all"
-    },
-    "revocable_trusts": {
-      "checked": false,
-      "require": "all"
-    },
-    "equity_rental_or_capital_investments": {
-      "checked": false,
-      "require": "all"
-    },
-    "investment_accounts": {
-      "checked": false,
-      "require": "all"
-    },
-    "retirement_accounts": {
-      "checked": false,
-      "require": "all"
-    },
-    "life_insurance_cash_value": {
-      "checked": false,
-      "require": "any"
-    },
-    "personal_property_investment": {
-      "checked": false,
-      "require": "all"
-    },
-    "lump_sum_one_time_receipts": {
-      "checked": false,
-      "require": "all"
-    },
-    "student_status_proof": {
-      "checked": false,
-      "require": "any"
-    },
-    "proof_of_pregnancy": {
-      "checked": false,
-      "require": "all"
-    },
-    "divorce_or_separation": {
-      "checked": false,
-      "require": "all"
-    }
+    "household_member_identification": true,
+    "section_8_or_housing_voucher": false,
+    "proof_of_local_preference": true,
+    "special_accommodation_documentation": false,
+    "pay_stubs": true,
+    "benefit_letter": false,
+    "child_support_alimony": true,
+    "self_employment": false,
+    "federal_tax_returns_2024": true,
+    "irs_non_filing_verification": false,
+    "w2_1099r": true,
+    "interest_dividends_income": false,
+    "checking_account_statements": true,
+    "prepaid_debit_card_statements": false,
+    "digital_wallet_statements": false,
+    "savings_account_statements": true,
+    "revocable_trusts": false,
+    "equity_rental_or_capital_investments": false,
+    "investment_accounts": false,
+    "retirement_accounts": false,
+    "life_insurance_cash_value": false,
+    "personal_property_investment": false,
+    "lump_sum_one_time_receipts": false,
+    "student_status_proof": false,
+    "proof_of_pregnancy": false,
+    "divorce_or_separation": false
   }
 }
