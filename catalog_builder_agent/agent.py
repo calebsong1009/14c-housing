@@ -30,7 +30,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 # Reach into the sibling catalog_templates package for the Pydantic models.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -38,6 +38,23 @@ from catalog_templates.templates import (  # noqa: E402
     DocumentSetRequirement,
     Trigger,
 )
+
+
+class _CatalogOutput(BaseModel):
+    """Wrapper for the agent's full response — drives the tool input_schema."""
+    analysis: str
+    triggers: list[Trigger]
+    requirements: list[DocumentSetRequirement]
+
+
+_OUTPUT_TOOL = {
+    "name": "submit_catalog",
+    "description": (
+        "Submit the trigger and document-set-requirement catalogs derived from "
+        "the program PDF. Call this exactly once with the full output."
+    ),
+    "input_schema": _CatalogOutput.model_json_schema(),
+}
 
 
 # ---------------------------------------------------------------------------
@@ -153,13 +170,12 @@ Programs in scope include affordable-housing applications (initial leasing) and 
 
 # OUTPUT FORMAT
 
-Respond with a single JSON object — no markdown fences, no prose outside the JSON:
+Submit your output by calling the `submit_catalog` tool exactly once. The tool's input schema is generated from the Pydantic models above and will be enforced by the API — any structural deviation will fail validation. Do not emit any free-text response; the tool call IS the response.
 
-{{
-  "analysis": "one or two sentences: anything the operator should know — gaps where the PDF lacked a template signal, judgment calls on document types, etc.",
-  "triggers": [ <full Trigger objects> ],
-  "requirements": [ <full DocumentSetRequirement objects> ]
-}}
+The tool takes three fields:
+- `analysis`: one or two sentences — anything the operator should know (gaps where the PDF lacked a template signal, judgment calls on document types, etc.)
+- `triggers`: array of full Trigger objects
+- `requirements`: array of full DocumentSetRequirement objects
 """
 
 
@@ -333,6 +349,8 @@ def run_catalog_builder(
                 "cache_control": {"type": "ephemeral"},
             }
         ],
+        tools=[_OUTPUT_TOOL],
+        tool_choice={"type": "tool", "name": _OUTPUT_TOOL["name"]},
         messages=[{"role": "user", "content": user_content}],
     )
 
@@ -343,15 +361,17 @@ def run_catalog_builder(
         f"cache_read={getattr(u, 'cache_read_input_tokens', 0)}"
     )
 
-    raw = response.content[0].text.strip()
-    if raw.startswith("```"):
-        raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+    tool_use = next(
+        (b for b in response.content if getattr(b, "type", None) == "tool_use"),
+        None,
+    )
+    if tool_use is None:
+        raise ValueError(
+            f"LLM did not call submit_catalog (stop_reason={response.stop_reason}); "
+            f"content={response.content!r}"
+        )
 
-    try:
-        result: dict = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"LLM returned non-JSON:\n{raw}") from exc
-
+    result: dict = tool_use.input
     triggers: list[dict] = result.get("triggers") or []
     requirements: list[dict] = result.get("requirements") or []
     analysis: str = result.get("analysis", "")
