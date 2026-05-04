@@ -2,12 +2,12 @@
 Feedback Agent — integration tests.
 
 Each test:
-  1. Runs compliance_trace on the (family, bundle) pair — confirms it FAILS.
+  1. Runs compliance_trace on a (family, bundle) pair — confirms it FAILS.
   2. Passes the trace + human feedback to run_feedback_agent.
-  3. Runs compliance again on (family, bundle) with updated catalogs — confirms PASS.
-  4. Checks the edit was surgical (only the described item changed).
+  3. Runs compliance again with updated catalogs — confirms PASS.
+  4. Checks the edit was surgical.
 
-Requires ANTHROPIC_API_KEY in the environment.
+Requires ANTHROPIC_API_KEY (in .env at repo root or in environment).
 Run: python tests/test_feedback_agent.py
 """
 
@@ -34,27 +34,32 @@ def _bundle(n: int) -> dict:
 # ---------------------------------------------------------------------------
 # Test 1 — req_pay_stubs requires 5 stubs; bundle_3 only has 3.
 #
-# family_3 (Marcus Webb): pay_stubs.checked=True → trigger fires → req_pay_stubs.
-# bundle_3 has pay_stub_1, 2, 3 only — pay_stub_4 and pay_stub_5 are missing.
-# Human feedback: only 3 stubs are required, not 5.
-# Expected fix: document_spec shrinks from all_of[5] to all_of[3].
+# family_3 (Marcus Webb): eligibility_checklist.pay_stubs = true (plain bool,
+# matches updated family format) → trigger fires.
+# bundle_3 has pay_stub_1, pay_stub_2, pay_stub_3 only.
+# Buggy catalog requires all_of[5] → FAIL.
+# Human feedback: regulation only requires 3.
+# Expected fix: document_spec shrinks to all_of[3].
 # ---------------------------------------------------------------------------
 
 TRIGGERS_T1 = [
     {
-        "trigger_id": "trig_pay_stubs",
-        "description": "Require pay stubs when applicant self-attests to wage income",
+        "trigger_id": "trig_pay_stubs_checklist",
+        "description": "Self-attested wage income → require consecutive pay stubs",
         "activation": {
             "type": "predicate",
-            "field": "eligibility_checklist.pay_stubs.checked",
+            "field": "eligibility_checklist.pay_stubs",
             "operator": "equals",
             "value": True,
         },
         "emits_requirements": ["req_pay_stubs"],
         "instance_scope": "household",
+        "per_member_scope": None,
         "source_reference": {
             "document": "Maple Square FCFS Application 2026",
-            "section": "Income Verification — Pay Stubs",
+            "page": 18,
+            "section": "Required Documents item 5",
+            "quote": None,
         },
     }
 ]
@@ -62,30 +67,31 @@ TRIGGERS_T1 = [
 REQS_T1 = [
     {
         "requirement_id": "req_pay_stubs",
-        "description": "Five consecutive pay stubs",
+        "description": "Five consecutive pay stubs (bug: should be 3)",
         "document_spec": {
             "type": "all_of",
             "children": [
-                {"type": "document", "document_type": "pay_stub_1.pdf"},
-                {"type": "document", "document_type": "pay_stub_2.pdf"},
-                {"type": "document", "document_type": "pay_stub_3.pdf"},
-                {"type": "document", "document_type": "pay_stub_4.pdf"},
-                {"type": "document", "document_type": "pay_stub_5.pdf"},
+                {"type": "document", "document_type": "pay_stub_1.pdf", "notes": None},
+                {"type": "document", "document_type": "pay_stub_2.pdf", "notes": None},
+                {"type": "document", "document_type": "pay_stub_3.pdf", "notes": None},
+                {"type": "document", "document_type": "pay_stub_4.pdf", "notes": None},
+                {"type": "document", "document_type": "pay_stub_5.pdf", "notes": None},
             ],
         },
         "source_reference": {
             "document": "Maple Square FCFS Application 2026",
-            "section": "Income Verification — Pay Stubs",
+            "page": 18,
+            "section": "Required Documents item 5",
+            "quote": None,
         },
     }
 ]
 
 FEEDBACK_T1 = (
     "The pay stubs requirement failed because pay_stub_4.pdf and pay_stub_5.pdf were missing. "
-    "However, the regulation only requires 3 consecutive pay stubs, not 5. "
-    "Marcus Webb submitted pay_stub_1.pdf, pay_stub_2.pdf, and pay_stub_3.pdf — "
-    "those three are sufficient and the compliance check should have passed. "
-    "Please update the requirement to only require 3 pay stubs."
+    "However the regulation only requires 3 consecutive pay stubs, not 5. "
+    "Marcus Webb submitted pay_stub_1.pdf, pay_stub_2.pdf, and pay_stub_3.pdf which is sufficient. "
+    "Please update req_pay_stubs to only require 3 pay stubs."
 )
 
 
@@ -98,7 +104,7 @@ def test_pay_stubs_requirement_fix() -> None:
     assert any(
         r["requirement_id"] == "req_pay_stubs" and not r["satisfied"]
         for r in trace["requirement_trace"]
-    ), "Expected req_pay_stubs to be unsatisfied"
+    )
 
     updated_triggers, updated_reqs, analysis = run_feedback_agent(
         trigger_catalog=TRIGGERS_T1,
@@ -113,84 +119,87 @@ def test_pay_stubs_requirement_fix() -> None:
     passed_after, failed_after = run_compliance(family, bundle, updated_triggers, updated_reqs)
     assert passed_after, f"Expected post-fix pass, still failing: {failed_after}"
 
-    # Triggers should be untouched
     assert updated_triggers == TRIGGERS_T1, "Triggers should not have changed"
 
-    # req_pay_stubs document_spec must have changed
     updated_spec = next(
         r["document_spec"] for r in updated_reqs if r["requirement_id"] == "req_pay_stubs"
     )
-    original_spec = REQS_T1[0]["document_spec"]
-    assert updated_spec != original_spec, "document_spec should have changed"
+    assert updated_spec != REQS_T1[0]["document_spec"], "document_spec should have changed"
 
     print("[T1] PASS")
 
 
 # ---------------------------------------------------------------------------
-# Test 2 — trig_federal_tax_returns fires on employment presence (bug);
-#           should fire on checklist field.
+# Test 2 — trig_irs_non_filing fires for every applicant (bug: household.total_size > 0);
+#           should only fire when eligibility_checklist.irs_non_filing_verification = true.
 #
-# family_4 (Priya Patel): has employer → employment.date_of_hire exists → trigger fires.
-# But eligibility_checklist.federal_tax_returns_2024.checked = False.
-# bundle_4 has no federal_tax_return_2024.pdf → FAIL.
-# Human feedback: trigger should be keyed to the checklist, not employment.
-# Expected fix: activation field changes to checklist path.
-# After fix: checklist=False → trigger doesn't fire → no req emitted → PASS.
+# family_4 (Priya Patel): total_size=1 > 0 → trigger fires.
+# eligibility_checklist.irs_non_filing_verification = false.
+# bundle_4 has no irs_non_filing_verification.pdf → FAIL.
+# Human feedback: trigger should use the checklist field.
+# After fix: checklist=false → trigger doesn't fire → PASS.
 # ---------------------------------------------------------------------------
 
 TRIGGERS_T2 = [
     {
-        "trigger_id": "trig_federal_tax_returns",
-        "description": "Require federal tax returns",
+        "trigger_id": "trig_irs_non_filing",
+        "description": "IRS non-filing verification — bug: fires for all applicants",
         "activation": {
             "type": "predicate",
-            "field": "employment.date_of_hire",
-            "operator": "exists",
+            "field": "household.total_size",
+            "operator": "greater_than",
+            "value": 0,
         },
-        "emits_requirements": ["req_federal_tax_returns"],
+        "emits_requirements": ["req_irs_non_filing"],
         "instance_scope": "household",
+        "per_member_scope": None,
         "source_reference": {
             "document": "Maple Square FCFS Application 2026",
-            "section": "Income Verification — Tax Returns",
+            "page": 19,
+            "section": "Required Documents item 9",
+            "quote": None,
         },
     }
 ]
 
 REQS_T2 = [
     {
-        "requirement_id": "req_federal_tax_returns",
-        "description": "Most recent federal tax return (2024)",
+        "requirement_id": "req_irs_non_filing",
+        "description": "IRS verification of non-filing letter",
         "document_spec": {
             "type": "document",
-            "document_type": "federal_tax_return_2024.pdf",
+            "document_type": "irs_non_filing_verification.pdf",
+            "notes": None,
         },
         "source_reference": {
             "document": "Maple Square FCFS Application 2026",
-            "section": "Income Verification — Tax Returns",
+            "page": 19,
+            "section": "Required Documents item 9",
+            "quote": None,
         },
     }
 ]
 
 FEEDBACK_T2 = (
-    "The federal tax returns trigger incorrectly fired for Priya Patel. "
-    "The trigger is keyed to employment.date_of_hire being present, but that is wrong — "
-    "it should only fire when the applicant checked the federal_tax_returns_2024 item "
-    "on their eligibility checklist (eligibility_checklist.federal_tax_returns_2024.checked). "
-    "Priya did not check that box, so the trigger should not have fired at all. "
+    "The IRS non-filing verification trigger is incorrectly firing for Priya Patel. "
+    "The trigger fires for every applicant (household.total_size > 0) which is wrong — "
+    "it should only fire when the applicant checked the irs_non_filing_verification box "
+    "on their eligibility checklist (eligibility_checklist.irs_non_filing_verification equals true). "
+    "Priya did not check that box so the trigger should not have fired. "
     "Please fix the trigger activation to use the checklist field."
 )
 
 
-def test_federal_tax_trigger_fix() -> None:
+def test_irs_non_filing_trigger_fix() -> None:
     family = _family(4)
     bundle = _bundle(4)
 
     trace = run_compliance_trace(family, bundle, TRIGGERS_T2, REQS_T2)
     assert not trace["passed"], "Expected pre-fix failure"
     assert any(
-        t["trigger_id"] == "trig_federal_tax_returns" and t["fired"]
+        t["trigger_id"] == "trig_irs_non_filing" and t["fired"]
         for t in trace["trigger_trace"]
-    ), "Expected trig_federal_tax_returns to have fired"
+    )
 
     updated_triggers, updated_reqs, analysis = run_feedback_agent(
         trigger_catalog=TRIGGERS_T2,
@@ -205,37 +214,30 @@ def test_federal_tax_trigger_fix() -> None:
     passed_after, failed_after = run_compliance(family, bundle, updated_triggers, updated_reqs)
     assert passed_after, f"Expected post-fix pass, still failing: {failed_after}"
 
-    # Requirements should be untouched
     assert updated_reqs == REQS_T2, "Requirements should not have changed"
 
-    # Trigger activation must reference the checklist field now
     updated_activation = next(
-        t["activation"] for t in updated_triggers
-        if t["trigger_id"] == "trig_federal_tax_returns"
+        t["activation"] for t in updated_triggers if t["trigger_id"] == "trig_irs_non_filing"
     )
-    activation_str = json.dumps(updated_activation)
-    assert "federal_tax_returns_2024" in activation_str, (
-        f"Updated activation should reference checklist field, got: {activation_str}"
+    assert "irs_non_filing_verification" in json.dumps(updated_activation), (
+        f"Updated activation should reference checklist field, got: {updated_activation}"
     )
 
     print("[T2] PASS")
 
 
 # ---------------------------------------------------------------------------
-# Test 3 — req_household_member_id only accepts birth_certificate.pdf (bug);
-#           driver_license and passport are also valid.
-#
-# Custom bundle has driver_license.pdf but no birth_certificate.pdf.
-# Buggy req → FAIL.
-# Human feedback: driver_license.pdf should be accepted.
-# Expected fix: document_spec becomes one_of including driver_license.
-# After fix: driver_license.pdf in bundle → PASS.
+# Test 3 — trig_household_member_id is per_member scope (matches real catalog).
+#           req only accepts birth_certificate.pdf (bug).
+#           Bundle has driver_license.pdf but no birth_certificate → FAIL per member.
+#           Human feedback: driver_license should also be accepted.
+#           After fix: one_of spec → driver_license satisfies for all members → PASS.
 # ---------------------------------------------------------------------------
 
 TRIGGERS_T3 = [
     {
         "trigger_id": "trig_household_member_id",
-        "description": "Always require household member identification",
+        "description": "Every household member needs identification",
         "activation": {
             "type": "predicate",
             "field": "household.total_size",
@@ -243,10 +245,18 @@ TRIGGERS_T3 = [
             "value": 0,
         },
         "emits_requirements": ["req_household_member_id"],
-        "instance_scope": "household",
+        "instance_scope": "per_member",
+        "per_member_scope": {
+            "type": "predicate",
+            "field": "name",
+            "operator": "exists",
+            "value": None,
+        },
         "source_reference": {
             "document": "Maple Square FCFS Application 2026",
-            "section": "Required Documents — Identification",
+            "page": 18,
+            "section": "Required Documents item 1",
+            "quote": None,
         },
     }
 ]
@@ -254,19 +264,21 @@ TRIGGERS_T3 = [
 REQS_T3 = [
     {
         "requirement_id": "req_household_member_id",
-        "description": "Government-issued photo identification",
+        "description": "Government-issued photo ID — bug: only accepts birth certificate",
         "document_spec": {
             "type": "document",
             "document_type": "birth_certificate.pdf",
+            "notes": None,
         },
         "source_reference": {
             "document": "Maple Square FCFS Application 2026",
-            "section": "Required Documents — Identification",
+            "page": 18,
+            "section": "Required Documents item 1",
+            "quote": None,
         },
     }
 ]
 
-# Bundle with a driver's license but no birth certificate
 BUNDLE_T3 = {
     "bundle_id": "bundle_test3",
     "documents": [
@@ -282,12 +294,11 @@ BUNDLE_T3 = {
 }
 
 FEEDBACK_T3 = (
-    "The household member ID requirement failed because the bundle contained driver_license.pdf "
-    "but the requirement only accepts birth_certificate.pdf. "
+    "The household member ID requirement failed for Carlos and Maria Rivera because "
+    "the bundle contained driver_license.pdf but the requirement only accepts birth_certificate.pdf. "
     "The Maple Square application accepts any government-issued photo ID — "
-    "a driver's license is valid identification and should satisfy this requirement. "
-    "Please update the requirement to also accept driver_license.pdf and passport.pdf "
-    "as alternatives to birth_certificate.pdf."
+    "a driver's license is valid identification. "
+    "Please update req_household_member_id to also accept driver_license.pdf and passport.pdf."
 )
 
 
@@ -315,20 +326,14 @@ def test_household_id_requirement_fix() -> None:
     passed_after, failed_after = run_compliance(family, bundle, updated_triggers, updated_reqs)
     assert passed_after, f"Expected post-fix pass, still failing: {failed_after}"
 
-    # Triggers should be untouched
     assert updated_triggers == TRIGGERS_T3, "Triggers should not have changed"
 
-    # document_spec must now accept driver_license.pdf
     updated_spec = next(
         r["document_spec"] for r in updated_reqs if r["requirement_id"] == "req_household_member_id"
     )
-    assert updated_spec["type"] == "one_of", (
-        f"Expected one_of document_spec, got {updated_spec['type']!r}"
-    )
+    assert updated_spec["type"] == "one_of", f"Expected one_of, got {updated_spec['type']!r}"
     doc_types = {c["document_type"] for c in updated_spec["children"]}
-    assert "driver_license.pdf" in doc_types, (
-        f"driver_license.pdf should be in updated spec, got: {doc_types}"
-    )
+    assert "driver_license.pdf" in doc_types
 
     print("[T3] PASS")
 
@@ -339,9 +344,9 @@ def test_household_id_requirement_fix() -> None:
 
 if __name__ == "__main__":
     tests = [
-        ("Test 1 — pay_stubs req (5→3 stubs, family_3/bundle_3)",        test_pay_stubs_requirement_fix),
-        ("Test 2 — federal_tax trigger (employment→checklist, family_4)", test_federal_tax_trigger_fix),
-        ("Test 3 — household_id req (birth_cert→one_of, family_5)",       test_household_id_requirement_fix),
+        ("Test 1 — pay_stubs req (5→3 stubs, family_3/bundle_3)",              test_pay_stubs_requirement_fix),
+        ("Test 2 — irs_non_filing trigger (always-on→checklist, family_4)",    test_irs_non_filing_trigger_fix),
+        ("Test 3 — household_id per_member req (birth_cert→one_of, family_5)", test_household_id_requirement_fix),
     ]
 
     passed = failed = 0

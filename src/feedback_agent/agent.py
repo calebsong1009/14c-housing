@@ -38,12 +38,13 @@ import json
 import sys
 from pathlib import Path
 
+import os
+
 import anthropic
 
 from compliance import run_compliance_trace
 
-# Load ANTHROPIC_API_KEY from a .env file if present (optional, never required).
-# Format: ANTHROPIC_API_KEY=sk-ant-...
+
 def _load_dotenv() -> None:
     env_path = Path(__file__).parent.parent / ".env"
     if not env_path.exists():
@@ -55,7 +56,7 @@ def _load_dotenv() -> None:
         key, _, val = line.partition("=")
         os.environ.setdefault(key.strip(), val.strip())
 
-import os
+
 _load_dotenv()
 
 
@@ -95,7 +96,7 @@ _SCHEMA = """\
 {"type": "one_of",   "children": [<DocumentSpec>, ...]}   // at least one child required
 
 ## Household-level predicate field paths (dotted into the family JSON)
-eligibility_checklist.<item>.checked   — applicant self-attestation boolean
+eligibility_checklist.<item>   — applicant self-attestation boolean (plain bool, e.g. eligibility_checklist.pay_stubs)
 household.total_size
 personal_information.<field>
 employment.date_of_hire
