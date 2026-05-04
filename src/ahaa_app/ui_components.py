@@ -33,17 +33,34 @@ def _requirement_items(requirement_ids):
     return "\n".join(f"<li>{escape(str(req_id))}</li>" for req_id in requirement_ids)
 
 
-def _trigger_card(trigger_id, trigger_data, index=None):
-    passed = bool(trigger_data.get("pass", False))
+def _trigger_card(trigger_data, index, eval_mode=False):
+    passed = bool(trigger_data["requirement_fulfilled"])
     raw_description = trigger_data.get("description", "No description provided.")
+    source_ref = trigger_data.get("source_reference", {})
     style = STATUS_STYLES[passed]
-    header = f"{trigger_id} - {raw_description}"
+    header = f"{index}. {raw_description}"
     escaped_header = escape(header, quote=True)
-    feedback_key = str(index) if index is not None else ""
+    feedback_key = str(index) if eval_mode else ""
 
+    # get display for all missing docs
+    missing_docs_field = ""
+    if not passed:
+        all_missing_docs = []
+        for instance in trigger_data.get('instances',[]):
+            if bool(instance['fulfilled']) == False:
+                member = instance.get("applies_to_member", "")
+                member = "" if (member is None) or (member.isin(['null',''])) else (member+' - ')
+                all_missing_docs.extend([f'{member}'+doc for doc in instance.get('missing_documents',[])])
+
+        missing_docs_field = f"""<p><strong>Missing Documents:</strong></p>
+                <ul>{_requirement_items(all_missing_docs)}</ul>
+                <p></p>
+                """
+        
     flag_button = ""
     feedback_field = ""
-    if index is not None:
+    trigger_id = ""
+    if eval_mode:
         flag_button = f"""
             <button
                 aria-label="Flag {escaped_header} for evaluation"
@@ -58,14 +75,17 @@ def _trigger_card(trigger_id, trigger_data, index=None):
         """
         feedback_field = f"""
             <div class="feedback-field">
-                <label for="trigger-feedback-{feedback_key}">Feedback</label>
+                <label for="trigger-feedback-{feedback_key}">Feedback:</label>
                 <textarea
                     data-feedback-input="{feedback_key}"
                     id="trigger-feedback-{feedback_key}"
-                    placeholder="Enter feedback for this trigger"
+                    placeholder="If this requirement appears incorrect, please flag it and provide a brief explanation."
                     rows="3"
                 ></textarea>
             </div>
+        """
+        trigger_id = f"""
+            <p><strong>Trigger ID:</strong> {str(trigger_data['trigger_id'])}</p>
         """
 
     return f"""
@@ -75,15 +95,17 @@ def _trigger_card(trigger_id, trigger_data, index=None):
                 style="background: {style["background"]}; color: {style["text"]};"
             >
                 <span aria-label="{style["icon"]}" class="status-symbol">{style["symbol"]}</span>
-                {escape(str(trigger_id))} - {escape(str(raw_description))}
+                {escaped_header}
             </summary>
             <div class="trigger-body">
                 <div class="trigger-body-header">
-                    <p><strong>Pass:</strong> {str(passed).lower()}</p>
+                    <p><strong>Requirement Passed:</strong> {str(passed)}</p>
                     {flag_button}
                 </div>
-                <p><strong>Document Requirement IDs:</strong></p>
-                <ul>{_requirement_items(trigger_data.get("document_requirement_id", []))}</ul>
+                {missing_docs_field}
+                <p><strong>Application Guideline Reference:</strong></p>
+                <p>This requirement was extracted from the <i>{source_ref.get("document", "unknown")}</i> document, page {source_ref.get("page", "unknown")}, section "{source_ref.get("section", "unknown")}".</p>
+                {trigger_id}
                 {feedback_field}
             </div>
         </details>
@@ -92,7 +114,7 @@ def _trigger_card(trigger_id, trigger_data, index=None):
 
 def _trigger_count_height(triggers, eval_mode=False):
     requirement_count = 0
-    for trigger_data in triggers.values():
+    for trigger_data in triggers:
         requirement_ids = trigger_data.get("document_requirement_id", [])
         requirement_count += len(requirement_ids) if requirement_ids else 1
 
@@ -333,6 +355,10 @@ def _shared_css():
 
 def _status_banner_html(label, passed, include_flag=False):
     style = STATUS_STYLES[bool(passed)]
+    if passed:
+        display_text = "✓ Application Complete - all supporting documents are present."
+    else:
+        display_text = '✕ Application Incomplete - missing supporting documents.'
     flag_button = ""
     if include_flag:
         flag_button = """
@@ -356,7 +382,7 @@ def _status_banner_html(label, passed, include_flag=False):
                     color: {style["text"]};
                 "
             >
-                {escape(str(label))}: <span class="status-value">{str(bool(passed)).lower()}</span>
+                {escape(str(display_text))}
             </div>
             {flag_button}
         </div>
@@ -373,8 +399,8 @@ def render_status_banner(label, passed):
 
 def render_trigger_details_accordion(triggers):
     trigger_content = "".join(
-        _trigger_card(trigger_id, trigger_data)
-        for trigger_id, trigger_data in triggers.items()
+        _trigger_card(trigger_data, index)
+        for index, trigger_data in enumerate(triggers)
     )
     height = _trigger_count_height(triggers)
 
@@ -382,7 +408,7 @@ def render_trigger_details_accordion(triggers):
         f"""
         {_shared_css()}
         <details class="trigger-details">
-            <summary>Trigger Details</summary>
+            <summary>Document Requirement Details</summary>
             <div class="trigger-list">{trigger_content}</div>
         </details>
         """,
@@ -393,8 +419,8 @@ def render_trigger_details_accordion(triggers):
 
 def render_eval_results(overall_pass, triggers):
     trigger_content = "".join(
-        _trigger_card(trigger_id, trigger_data, index)
-        for index, (trigger_id, trigger_data) in enumerate(triggers.items())
+        _trigger_card(trigger_data, index, eval_mode=True)
+        for index, (trigger_data) in enumerate(triggers)
     )
     if not trigger_content:
         trigger_content = '<div class="empty-feedback">No triggers were returned.</div>'
@@ -409,13 +435,13 @@ def render_eval_results(overall_pass, triggers):
             <textarea
                 data-overall-feedback
                 id="overall-feedback"
-                placeholder="Enter overall feedback"
+                placeholder="If this result appears incorrect, please flag it and provide a brief explanation for review."
                 rows="3"
             ></textarea>
         </div>
 
         <details class="trigger-details">
-            <summary>Trigger Details</summary>
+            <summary>Document Requirement Details</summary>
             <div class="trigger-list">{trigger_content}</div>
         </details>
 

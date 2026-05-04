@@ -1,5 +1,5 @@
 import streamlit as st
-
+from pathlib import Path
 from checker import check_doc
 from ui_components import (
     render_eval_results,
@@ -7,18 +7,27 @@ from ui_components import (
     render_trigger_details_accordion,
 )
 
+def test_check_doc(num):
+    base_dir =  Path(__file__).parent.parent.parent # 14c-housing
+    ex_num = num
+    print('base_dir', base_dir)
+    family_app_filepath = base_dir / f'evals/usecases/family_{ex_num}.json'
+    doc_bundle_filepath = base_dir / f'evals/usecases/bundle_{ex_num}.json'
+    trigger_catalog_filepath = base_dir / 'catalog_templates/trigger_catalog.json'
+    req_catalog_filepath = base_dir / 'catalog_templates/req_catalog.json'
+    return check_doc(family_app_filepath,doc_bundle_filepath,trigger_catalog_filepath,req_catalog_filepath)
 
 st.set_page_config(
-    page_title="Document Eligibility Checker",
-    page_icon="📄",
+    page_title="HAHA",
+    page_icon="🏠",
     layout="centered",
 )
 
-st.title("AHAA: Affordable Housing Application Assistant")
+st.title("HAHA: Help for Affordable Housing Applications.")
 st.write(
-    "Upload the application file and supporting document bundle, then run the "
-    "check to verify whether all necessary documents for application requirements "
-    "are present."
+    "Check whether your Affordable Housing Application is complete! \n\n"
+    "Upload your application file and supporting document bundle, then run the "
+    "check to see whether any required documents may be missing."
 )
 
 with st.form("eligibility_form"):
@@ -54,7 +63,9 @@ if check_clicked:
         st.error("Please upload required document files before running the check.")
     else:
         try:
-            overall_pass, triggers = check_doc(application_file, bundle_files or [])
+            
+            # overall_pass, triggers = dummy_check_doc(application_file, bundle_files or [])
+            overall_pass, triggers = test_check_doc(3)
 
             st.divider()
             if eval_mode:
