@@ -1,12 +1,16 @@
 from __future__ import annotations
-
 from typing import Dict, List, Tuple, Any
-
+import sys
+from pathlib import Path
+import json
+# Support running from the project root
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from compliance_checker.compliance_check import build_report
 
 TriggerDict = Dict[str, Dict[str, Any]]
 
 
-def check_doc(application_file, document_bundle_files) -> Tuple[bool, TriggerDict]:
+def check_doc(family_app_filepath, document_bundle_filepath) -> Tuple[bool, TriggerDict]:
     """
     Runs document eligibility checks.
 
@@ -33,6 +37,13 @@ def check_doc(application_file, document_bundle_files) -> Tuple[bool, TriggerDic
               }
           }
     """
+    family = json.loads(Path(family_app_filepath).read_text(encoding="utf-8"))
+    bundle = json.loads(Path(document_bundle_filepath).read_text(encoding="utf-8"))
+    triggers = json.loads(Path(args.trigger_catalog).read_text(encoding="utf-8"))
+    reqs = json.loads(Path(args.req_catalog).read_text(encoding="utf-8"))
+
+    report = build_report(family, bundle, triggers, reqs)
+    report = build_report()
     # Example placeholder behavior for MVP wiring.
     # Swap this out with your real implementation.
     bundle_count = len(document_bundle_files)

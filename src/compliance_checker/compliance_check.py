@@ -41,7 +41,8 @@ from collections import defaultdict
 from pathlib import Path
 
 # Support running from the project root
-sys.path.insert(0, str(Path(__file__).parent))
+# sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from feedback_agent.compliance import run_compliance_trace
 
 
