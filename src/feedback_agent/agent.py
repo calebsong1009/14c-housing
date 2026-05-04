@@ -46,8 +46,14 @@ from compliance import run_compliance_trace
 
 
 def _load_dotenv() -> None:
-    env_path = Path(__file__).parent.parent / ".env"
-    if not env_path.exists():
+    # Walk up from this file's location until we find a .env or hit the filesystem root
+    here = Path(__file__).resolve().parent
+    env_path = None
+    for candidate in [here, here.parent, here.parent.parent, here.parent.parent.parent]:
+        if (candidate / ".env").exists():
+            env_path = candidate / ".env"
+            break
+    if env_path is None:
         return
     for line in env_path.read_text().splitlines():
         line = line.strip()

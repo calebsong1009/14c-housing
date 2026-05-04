@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from compliance import run_compliance, run_compliance_trace
 from agent import run_feedback_agent
 
-USECASES = Path(__file__).parent.parent.parent / "usecases"
+USECASES = Path(__file__).parent.parent.parent.parent / "evals" / "usecases"
 
 
 def _family(n: int) -> dict:
