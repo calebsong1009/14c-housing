@@ -23,7 +23,6 @@ def test_check_doc(num):
     filepaths = get_test_filepaths(num)
     return check_doc(*filepaths)
 
-
 @st.cache_resource
 def get_feedback_save_url():
     save_dir = Path(__file__).resolve().parent / "saved_feedback"
@@ -98,7 +97,7 @@ if check_clicked:
                     doc_bundle_filepath,
                 )
             else:
-                render_status_banner("Document bundle passed", overall_pass, total_missing_docs)
+                render_status_banner(overall_pass, total_missing_docs)
 
                 if not triggers:
                     st.info("No triggers were returned.")

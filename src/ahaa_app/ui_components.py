@@ -168,6 +168,36 @@ def _shared_css():
                 font-weight: 800;
             }
 
+            .missing-docs-card {
+                border: 1px solid #d9dde3;
+                border-radius: 0.35rem;
+                box-sizing: border-box;
+                color: #262730;
+                font-size: 1rem;
+                line-height: 1.45;
+                margin: 0 0 1rem;
+                padding: 0.85rem 1rem 0.95rem;
+            }
+
+            .missing-docs-card h3 {
+                font-size: 1.05rem;
+                margin: 0 0 0.55rem;
+            }
+
+            .missing-docs-card ul {
+                margin: 0;
+                padding-left: 1.25rem;
+            }
+
+            .missing-docs-card li {
+                margin: 0.2rem 0;
+            }
+
+            .missing-docs-empty {
+                color: #4b5563;
+                margin: 0;
+            }
+
             .flag-button {
                 align-items: center;
                 background: #f7f7f8;
@@ -358,7 +388,7 @@ def _shared_css():
     """
 
 
-def _status_banner_html(label, passed, include_flag=False):
+def _status_banner_html(passed, include_flag=False):
     style = STATUS_STYLES[bool(passed)]
     if passed:
         display_text = "✓ Application Complete - all supporting documents are present."
@@ -394,10 +424,37 @@ def _status_banner_html(label, passed, include_flag=False):
     """
 
 
-def render_status_banner(label, passed, missing_docs):
+def _missing_docs_card_html(missing_docs):
+    missing_docs = missing_docs or []
+    if missing_docs:
+        content = f"<ul>{_requirement_items(missing_docs)}</ul>"
+        heading = f"Missing Documents ({len(missing_docs)})"
+    else:
+        heading = "Missing Documents"
+        content = '<p class="missing-docs-empty">No missing documents returned.</p>'
+
+    return f"""
+        <section class="missing-docs-card" aria-label="Missing documents">
+            <h3>{escape(heading)}</h3>
+            {content}
+        </section>
+    """
+
+
+def _status_results_height(missing_docs, base_height=84):
+    missing_doc_count = len(missing_docs or [])
+    card_height = 86 + max(0, missing_doc_count - 1) * 26
+    return base_height + card_height
+
+
+def render_status_banner(passed, missing_docs):
     components.html(
-        f"{_shared_css()}{_status_banner_html(label, passed)}",
-        height=84,
+        f"""
+        {_shared_css()}
+        {_status_banner_html(passed)}
+        {_missing_docs_card_html(missing_docs)}
+        """,
+        height=_status_results_height(missing_docs),
         scrolling=False,
     )
 
@@ -440,7 +497,8 @@ def render_eval_results(
     components.html(
         f"""
         {_shared_css()}
-        {_status_banner_html("Document bundle passed", overall_pass, include_flag=True)}
+        {_status_banner_html(overall_pass, include_flag=True)}
+        {_missing_docs_card_html(missing_docs)}
 
         <div class="feedback-field">
             <label for="overall-feedback">Overall Feedback</label>
@@ -486,6 +544,7 @@ def render_eval_results(
         </script>
         <script>{_eval_feedback_js()}</script>
         """,
-        height=_trigger_count_height(triggers, eval_mode=True),
+        height=_trigger_count_height(triggers, eval_mode=True)
+        + _status_results_height(missing_docs, base_height=0),
         scrolling=False,
     )

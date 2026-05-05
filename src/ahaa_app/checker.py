@@ -11,9 +11,7 @@ TriggerDict = Dict[str, Dict[str, Any]]
 
 def dummy_check_doc(application_file, document_bundle_files) -> Tuple[bool, TriggerDict]:
     """
-    Runs document eligibility checks.
-
-    Replace the body of this function with your real external checker call.
+    Runs dummy document eligibility checks.
 
     Parameters
     ----------
@@ -36,8 +34,6 @@ def dummy_check_doc(application_file, document_bundle_files) -> Tuple[bool, Trig
               }
           }
     """
-    # Example placeholder behavior for MVP wiring.
-    # Swap this out with your real implementation.
     bundle_count = len(document_bundle_files)
 
     triggers: TriggerDict = {
@@ -62,7 +58,7 @@ def dummy_check_doc(application_file, document_bundle_files) -> Tuple[bool, Trig
     return overall_pass, triggers
 
 
-example_triggers = """
+realistic_example_triggers = """
 {
       "trigger_id": "trig_household_member_id",
       "description": "Every household member needs identification",
@@ -152,7 +148,8 @@ def check_doc(family_app_filepath, doc_bundle_filepath,
     # only keep triggers that were fired by the family application
     fired_triggers = [trig for trig in report['triggers'] if bool(trig['fired'])==True]
     
-    # add "overall_missing_docs" to each trigger: list of tuple (missing_doc, applies_to_member)
+    # store total missing docs for easy display
+    # also add "overall_missing_docs" to each trigger (concats applies_to_member + missing_doc)
     total_missing_docs = []
     for trig in fired_triggers:
         missing_docs = []
@@ -160,13 +157,13 @@ def check_doc(family_app_filepath, doc_bundle_filepath,
             for instance in trig.get('instances', []):
                 if bool(instance['fulfilled']) == False:
                     member = instance.get("applies_to_member", "")
-                    member = "" if (member is None) or (member.isin(['null',''])) else (member+' - ')
+                    member = "" if member in (None, "null", "") else f"{member} - "
                     missing_docs.extend([f'{member}'+doc for doc in instance.get('missing_documents',[])])
         trig['all_missing_docs'] = missing_docs
         total_missing_docs.extend(missing_docs)
     
     # remove duplicates
-    total_missing_docs = list(set(total_missing_docs))
+    total_missing_docs = list(dict.fromkeys(total_missing_docs))
         
     return overall_pass, fired_triggers, total_missing_docs
 
