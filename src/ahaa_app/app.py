@@ -111,21 +111,27 @@ st.set_page_config(
     layout="centered",
 )
 
-st.title("🏠 HAHA: Help for Affordable Housing Applications")
+st.title("🏠 Help for Affordable Housing Applications")
 
-check_tab, build_tab, update_tab = st.tabs(
-    ["📋 Check My Application", "⚙️ Compliance Engine Config", "🛠️ Update Rule Catalog"]
-)
+eval_mode = st.toggle("⚙️ Housing Provider Admin View", value=False)
+
+tab_labels = ["📋 Check My Application"]
+if eval_mode:
+    tab_labels.extend(["⚙️ Compliance Engine Config", "🛠️ Update Rule Catalog"])
+
+tabs = st.tabs(tab_labels)
+check_tab = tabs[0]
+if eval_mode:
+    build_tab, update_tab = tabs[1], tabs[2]
 
 with check_tab:
     st.write(
-        "Check whether your Affordable Housing Application is complete! \n\n"
+        "Check whether your Affordable Housing Application is complete. \n\n"
         "Upload your application file and supporting document bundle, then run the "
         "check to see whether any required documents may be missing."
     )
 
     with st.container(border=True):
-        eval_mode = st.toggle("⚙️ Eval Mode", value=False)
         catalog_options = get_catalog_options()
         selected_catalog = st.selectbox(
             "Select the Housing Program Rule Catalog.",
@@ -195,105 +201,106 @@ with check_tab:
     else:
         st.caption("Nothing has been checked yet.")
 
-with build_tab:
-    st.write(
-        "Hello, Housing Provider! Convert your program’s existing guidelines into a structured rule catalog"
-        " that powers our compliance engine, which will allow families to check their application completeness for your housing program."
-    )
-
-    if "compliance_engine_created_message" in st.session_state:
-        st.success(st.session_state.pop("compliance_engine_created_message"))
-
-    with st.form("guidelines_form"):
-        compliance_engine_id = st.text_input(
-            "Program Rule Catalog ID",
-            max_chars=64,
-            placeholder="Enter an identifier for your housing program's rule catalog.",
-            key="compliance_engine_id",
-        )
-
-        st.subheader("Program Guidelines Upload")
-        guideline_files = st.file_uploader(
-            "Upload one or more application guideline documents for your program",
-            type=None,
-            accept_multiple_files=True,
-            key="guidelines_upload",
-        )
-
-        build_rules_clicked = st.form_submit_button("🤖 Build Compliance Rules")
-
-    if build_rules_clicked:
-        try:
-            compliance_engine_dir = get_compliance_engine_dir(compliance_engine_id)
-            if compliance_engine_dir.exists():
-                raise FileExistsError
-
-            render_compliance_engine_loading()
-            CATALOGS_DIR.mkdir(parents=True, exist_ok=True)
-            compliance_engine_dir.mkdir()
-            copy_llm_template_catalog(compliance_engine_dir)
-            st.session_state.compliance_engine_created_message = (
-                f"Created rule catalog for compliance engine: {compliance_engine_dir.name}"
-            )
-            st.session_state.latest_built_compliance_engine_id = compliance_engine_dir.name
-            st.rerun()
-        except FileExistsError:
-            st.error("A compliance engine with that id already exists.")
-        except ValueError as exc:
-            st.error(str(exc))
-        except Exception as exc:
-            st.exception(exc)
-
-    built_engine_id = st.session_state.get("latest_built_compliance_engine_id")
-    if built_engine_id:
-        try:
-            built_triggers = read_trigger_catalog(built_engine_id)
-            st.subheader("Generated Compliance Triggers")
-            st.caption(f"Program Rule Catalog ID: {built_engine_id}")
-            render_catalog_trigger_list(built_triggers)
-        except FileNotFoundError:
-            st.info(
-                f"No trigger_catalog.json found yet for {built_engine_id}. "
-                "Once the catalog builder writes that file, generated triggers will appear here."
-            )
-        except Exception as exc:
-            st.exception(exc)
-
-with update_tab:
-    st.write("Hello, Housing Provider! Update your existing rule catalog using flagged feedback from user applications.")
-
-    with st.container(border=True):
-        catalog_options = get_catalog_options()
-        selected_update_catalog = st.selectbox(
-            "Select the Housing Program Rule Catalog.",
-            options=catalog_options,
-            index=0 if catalog_options else None,
-            placeholder="No housing problem rule catalogs available",
-            key="update_catalog_select",
-        )
-
-    with st.form("update_rule_catalog_form"):
-        st.subheader("Upload Feedback Data")
+if eval_mode:
+    with build_tab:
         st.write(
-            "Upload the flagged user application, supporting document bundle, and the "
-            "output from the compliance engine with feedback notes."
-        )
-        feedback_files = st.file_uploader(
-            "Upload feedback data documents",
-            type=None,
-            accept_multiple_files=True,
-            key="feedback_data_upload",
+            "Hello, Housing Provider! Convert your program’s existing guidelines into a structured rule catalog"
+            " that powers our compliance engine, which will allow families to check their application completeness for your housing program."
         )
 
-        update_rules_clicked = st.form_submit_button("🤖 Update Rule Catalog")
+        if "compliance_engine_created_message" in st.session_state:
+            st.success(st.session_state.pop("compliance_engine_created_message"))
 
-    if update_rules_clicked:
-        if selected_update_catalog is None:
-            st.error("Please choose a rule catalog before updating.")
-        elif feedback_files is None or len(feedback_files) == 0:
-            st.error("Please upload feedback data before updating the rule catalog.")
-        else:
-            st.success(
-                f"Ready to update {selected_update_catalog} with "
-                f"{len(feedback_files)} feedback file(s)."
+        with st.form("guidelines_form"):
+            compliance_engine_id = st.text_input(
+                "Program Rule Catalog ID",
+                max_chars=64,
+                placeholder="Enter an identifier for your housing program's rule catalog.",
+                key="compliance_engine_id",
             )
+
+            st.subheader("Program Guidelines Upload")
+            guideline_files = st.file_uploader(
+                "Upload one or more application guideline documents for your program",
+                type=None,
+                accept_multiple_files=True,
+                key="guidelines_upload",
+            )
+
+            build_rules_clicked = st.form_submit_button("🤖 Build Compliance Rules")
+
+        if build_rules_clicked:
+            try:
+                compliance_engine_dir = get_compliance_engine_dir(compliance_engine_id)
+                if compliance_engine_dir.exists():
+                    raise FileExistsError
+
+                render_compliance_engine_loading()
+                CATALOGS_DIR.mkdir(parents=True, exist_ok=True)
+                compliance_engine_dir.mkdir()
+                copy_llm_template_catalog(compliance_engine_dir)
+                st.session_state.compliance_engine_created_message = (
+                    f"Created rule catalog for compliance engine: {compliance_engine_dir.name}"
+                )
+                st.session_state.latest_built_compliance_engine_id = compliance_engine_dir.name
+                st.rerun()
+            except FileExistsError:
+                st.error("A compliance engine with that id already exists.")
+            except ValueError as exc:
+                st.error(str(exc))
+            except Exception as exc:
+                st.exception(exc)
+
+        built_engine_id = st.session_state.get("latest_built_compliance_engine_id")
+        if built_engine_id:
+            try:
+                built_triggers = read_trigger_catalog(built_engine_id)
+                st.subheader("Generated Compliance Triggers")
+                st.caption(f"Program Rule Catalog ID: {built_engine_id}")
+                render_catalog_trigger_list(built_triggers)
+            except FileNotFoundError:
+                st.info(
+                    f"No trigger_catalog.json found yet for {built_engine_id}. "
+                    "Once the catalog builder writes that file, generated triggers will appear here."
+                )
+            except Exception as exc:
+                st.exception(exc)
+
+    with update_tab:
+        st.write("Hello, Housing Provider! Update your existing rule catalog using flagged feedback from user applications.")
+
+        with st.container(border=True):
+            catalog_options = get_catalog_options()
+            selected_update_catalog = st.selectbox(
+                "Select the Housing Program Rule Catalog.",
+                options=catalog_options,
+                index=0 if catalog_options else None,
+                placeholder="No housing problem rule catalogs available",
+                key="update_catalog_select",
+            )
+
+        with st.form("update_rule_catalog_form"):
+            st.subheader("Upload Feedback Data")
+            st.write(
+                "Upload the flagged user application, supporting document bundle, and the "
+                "output from the compliance engine with feedback notes."
+            )
+            feedback_files = st.file_uploader(
+                "Upload feedback data documents",
+                type=None,
+                accept_multiple_files=True,
+                key="feedback_data_upload",
+            )
+
+            update_rules_clicked = st.form_submit_button("🤖 Update Rule Catalog")
+
+        if update_rules_clicked:
+            if selected_update_catalog is None:
+                st.error("Please choose a rule catalog before updating.")
+            elif feedback_files is None or len(feedback_files) == 0:
+                st.error("Please upload feedback data before updating the rule catalog.")
+            else:
+                st.success(
+                    f"Ready to update {selected_update_catalog} with "
+                    f"{len(feedback_files)} feedback file(s)."
+                )
