@@ -14,8 +14,14 @@ from ui_components import (
     render_trigger_details_accordion,
 )
 
+# hard coded family and bundle id to pull from usecases
+TEST_FAMILY_ID = 4
+TEST_BUNDLE_ID = 4
+
 BASE_DIR =  Path(__file__).parent.parent.parent # 14c-housing
+# this directory contains rule catalogs available in the app dropdown
 CATALOGS_DIR = BASE_DIR / "catalogs"
+# copies catalog files in this directory to simulate "generating" new llm-based rule catalogs 
 LLM_GEN_CATALOG_DIR = BASE_DIR / "catalog_templates" / "mco_maple_square_llm"
 ENGINE_ID_ALLOWED_CHARS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-")
 
@@ -169,7 +175,7 @@ with check_tab:
         else:
             try:
                 family_app_filepath, doc_bundle_filepath, trigger_catalog_filepath, req_catalog_filepath = (
-                    get_test_filepaths(4, 4, selected_catalog)
+                    get_test_filepaths(TEST_FAMILY_ID, TEST_BUNDLE_ID, selected_catalog)
                 )
                 overall_pass, triggers, total_missing_docs = check_doc(
                     family_app_filepath,
