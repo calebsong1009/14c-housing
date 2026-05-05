@@ -1,0 +1,827 @@
+[
+  {
+    "trigger_id": "trig_universal_affidavit_disclosure",
+    "description": "Every applicant must submit the signed Affidavit & Disclosure Form.",
+    "activation": {
+      "type": "predicate",
+      "field": "household.total_size",
+      "operator": "greater_than",
+      "value": 0
+    },
+    "emits_requirements": [
+      "req_affidavit_disclosure"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 26,
+      "section": "Return the following to MCO Housing Services",
+      "quote": "Signed and dated Affidavit and Disclosure Form"
+    }
+  },
+  {
+    "trigger_id": "trig_universal_application_tips",
+    "description": "Every applicant must submit the signed Application Tips form.",
+    "activation": {
+      "type": "predicate",
+      "field": "household.total_size",
+      "operator": "greater_than",
+      "value": 0
+    },
+    "emits_requirements": [
+      "req_application_tips_signed"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 26,
+      "section": "Return the following to MCO Housing Services",
+      "quote": "Signed and dated Application Tips information"
+    }
+  },
+  {
+    "trigger_id": "trig_universal_release_of_info",
+    "description": "Every applicant must submit the signed Release of Information Authorization Form.",
+    "activation": {
+      "type": "predicate",
+      "field": "household.total_size",
+      "operator": "greater_than",
+      "value": 0
+    },
+    "emits_requirements": [
+      "req_release_of_information"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 26,
+      "section": "Return the following to MCO Housing Services",
+      "quote": "Complete, signed and dated Release of Information Authorization Form"
+    }
+  },
+  {
+    "trigger_id": "trig_member_identification_checklist",
+    "description": "Identification is required for each household member per checklist item 1.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.household_member_identification",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_member_identification"
+    ],
+    "instance_scope": "per_member",
+    "per_member_scope": {
+      "type": "predicate",
+      "field": "name",
+      "operator": "exists"
+    },
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 18,
+      "section": "Required Personal Identification and Income Verification Documents, Item 1",
+      "quote": "Identification for each household member, i.e. Birth Certificate etc."
+    }
+  },
+  {
+    "trigger_id": "trig_section_8_voucher_checklist",
+    "description": "Applicant indicated they have a Section 8 or other housing voucher on the checklist.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.section_8_or_housing_voucher",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_section_8_voucher"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 18,
+      "section": "Required Personal Identification and Income Verification Documents, Item 2",
+      "quote": "If you have a Section 8 Voucher or other Housing Voucher, you MUST provide a valid copy with your application or a letter from your Public Housing Authority."
+    }
+  },
+  {
+    "trigger_id": "trig_section_8_voucher_field",
+    "description": "Sanity overlay: personal_information field indicates Section 8/housing voucher is true.",
+    "activation": {
+      "type": "predicate",
+      "field": "personal_information.section_8_or_housing_voucher",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_section_8_voucher"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 18,
+      "section": "Required Personal Identification and Income Verification Documents, Item 2",
+      "quote": "If you have a Section 8 Voucher or other Housing Voucher, you MUST provide a valid copy with your application or a letter from your Public Housing Authority."
+    }
+  },
+  {
+    "trigger_id": "trig_local_preference_checklist",
+    "description": "Applicant indicated local preference applies per checklist item 3.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.proof_of_local_preference",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_local_preference"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 18,
+      "section": "Required Personal Identification and Income Verification Documents, Item 3",
+      "quote": "Proof of Local Preference, if applicable. i.e. lease, utility bill, voter registration, etc."
+    }
+  },
+  {
+    "trigger_id": "trig_special_accommodation_checklist",
+    "description": "Applicant indicated a special accommodation is required per checklist item 4.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.special_accommodation_documentation",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_special_accommodation"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 18,
+      "section": "Required Personal Identification and Income Verification Documents, Item 4",
+      "quote": "If you require Special Accommodation you must request as part of your application and if documentation is required, i.e. doctors letter, it MUST be included with the application."
+    }
+  },
+  {
+    "trigger_id": "trig_special_accommodation_field",
+    "description": "Sanity overlay: personal_information field indicates special accommodation is required.",
+    "activation": {
+      "type": "predicate",
+      "field": "personal_information.requires_special_accommodation",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_special_accommodation"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 18,
+      "section": "Required Personal Identification and Income Verification Documents, Item 4",
+      "quote": "If you require Special Accommodation you must request as part of your application and if documentation is required, i.e. doctors letter, it MUST be included with the application."
+    }
+  },
+  {
+    "trigger_id": "trig_pay_stubs_checklist",
+    "description": "Applicant indicated pay stubs are applicable per checklist item 5.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.pay_stubs",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_pay_stubs"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 18,
+      "section": "Required Personal Identification and Income Verification Documents, Item 5",
+      "quote": "The most recent last five (5) consecutive pay stubs for all jobs (check/direct deposit stubs)."
+    }
+  },
+  {
+    "trigger_id": "trig_pay_stubs_income_field",
+    "description": "Sanity overlay: applicant has non-zero monthly base income, implying pay stubs are needed.",
+    "activation": {
+      "type": "predicate",
+      "field": "financials.applicant_monthly_base_income_gross",
+      "operator": "greater_than",
+      "value": 0
+    },
+    "emits_requirements": [
+      "req_pay_stubs"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 18,
+      "section": "Required Personal Identification and Income Verification Documents, Item 5",
+      "quote": "The most recent last five (5) consecutive pay stubs for all jobs (check/direct deposit stubs)."
+    }
+  },
+  {
+    "trigger_id": "trig_employment_offer_letter_hire_date",
+    "description": "Applicant has a date of hire on record; if hired within last 12 months an employment offer letter is required (over-fires on any non-null hire date per DSL recency limitations).",
+    "activation": {
+      "type": "predicate",
+      "field": "employment.date_of_hire",
+      "operator": "exists"
+    },
+    "emits_requirements": [
+      "req_employment_offer_letter"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 18,
+      "section": "Required Personal Identification and Income Verification Documents, Item 5 NOTE",
+      "quote": "If you have obtained a new job within the last 12 months you must provide a copy of the Employment Offer Letter."
+    }
+  },
+  {
+    "trigger_id": "trig_benefit_letter_checklist",
+    "description": "Applicant indicated benefit letters are applicable per checklist item 6.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.benefit_letter",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_benefit_letter"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 18,
+      "section": "Required Personal Identification and Income Verification Documents, Item 6",
+      "quote": "Benefit letter providing full amount of periodic amounts received from Social Security, annuities, insurance policies, retirement funds, pensions, disability or death benefits and other similar types of periodic receipts."
+    }
+  },
+  {
+    "trigger_id": "trig_child_support_alimony_checklist",
+    "description": "Applicant indicated child support/alimony applies per checklist item 7.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.child_support_alimony",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_child_support_alimony",
+      "req_custody_child_support_affidavit"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 18,
+      "section": "Required Personal Identification and Income Verification Documents, Item 7",
+      "quote": "Child support and alimony: court document indicating the payment amount, DOR statement, copy of divorce papers. If you do not receive child support provide a letter stating that you are not receiving child support. See attached form."
+    }
+  },
+  {
+    "trigger_id": "trig_self_employment_checklist",
+    "description": "Applicant indicated self-employment applies per checklist item 8.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.self_employment",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_self_employment"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 18,
+      "section": "Required Personal Identification and Income Verification Documents, Item 8",
+      "quote": "If you are self-employed you MUST provide a detailed expense and income statement for the last 12 months and three months of business checking and savings accounts along with last three Federal Income Tax Returns."
+    }
+  },
+  {
+    "trigger_id": "trig_federal_tax_returns_checklist",
+    "description": "Applicant indicated 2024 federal tax returns apply per checklist item 9.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.federal_tax_returns_2024",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_federal_tax_return_2024"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 19,
+      "section": "Required Personal Identification and Income Verification Documents, Item 9",
+      "quote": "Federal Tax Returns \u20132024 (NO STATE TAX RETURNS)"
+    }
+  },
+  {
+    "trigger_id": "trig_irs_non_filing_checklist",
+    "description": "Applicant indicated IRS non-filing verification applies per checklist item 9 note.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.irs_non_filing_verification",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_irs_non_filing"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 19,
+      "section": "Required Personal Identification and Income Verification Documents, Item 9 NOTE",
+      "quote": "If you have not filed tax returns you must provide a letter from the IRS Verifying Non-filing of your tax return(s)."
+    }
+  },
+  {
+    "trigger_id": "trig_w2_1099r_checklist",
+    "description": "Applicant indicated W2/1099-R applies per checklist item 10.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.w2_1099r",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_w2_1099r"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 19,
+      "section": "Required Personal Identification and Income Verification Documents, Item 10",
+      "quote": "W2 and/or 1099-R Forms: 2024 & (2025 if available)"
+    }
+  },
+  {
+    "trigger_id": "trig_interest_dividends_checklist",
+    "description": "Applicant indicated interest/dividend income applies per checklist item 11.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.interest_dividends_income",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_interest_dividends"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 19,
+      "section": "Required Personal Identification and Income Verification Documents, Item 11",
+      "quote": "Interest, dividends and other net income of any kind from real or personal property."
+    }
+  },
+  {
+    "trigger_id": "trig_checking_account_checklist",
+    "description": "Applicant indicated checking account statements apply per checklist item 12.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.checking_account_statements",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_checking_statement"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 19,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Checking",
+      "quote": "Checking accounts \u2013EVERY PAGE \u2013 FRONT AND BACK."
+    }
+  },
+  {
+    "trigger_id": "trig_checking_account_field",
+    "description": "Sanity overlay: checking account balance is non-zero, implying a statement is required.",
+    "activation": {
+      "type": "predicate",
+      "field": "assets.checking",
+      "operator": "greater_than",
+      "value": 0
+    },
+    "emits_requirements": [
+      "req_checking_statement"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 19,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Checking",
+      "quote": "Checking accounts \u2013EVERY PAGE \u2013 FRONT AND BACK."
+    }
+  },
+  {
+    "trigger_id": "trig_prepaid_debit_checklist",
+    "description": "Applicant indicated prepaid debit card statements apply per checklist item 12.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.prepaid_debit_card_statements",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_prepaid_debit_card"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 19,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Pre-paid debit",
+      "quote": "Pre-paid debit card statements EVERY PAGE \u2013 FRONT AND BACK."
+    }
+  },
+  {
+    "trigger_id": "trig_prepaid_debit_field",
+    "description": "Sanity overlay: debit_card asset balance is non-zero, implying a prepaid debit statement is required.",
+    "activation": {
+      "type": "predicate",
+      "field": "assets.debit_card",
+      "operator": "greater_than",
+      "value": 0
+    },
+    "emits_requirements": [
+      "req_prepaid_debit_card"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 19,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Pre-paid debit",
+      "quote": "Pre-paid debit card statements EVERY PAGE \u2013 FRONT AND BACK."
+    }
+  },
+  {
+    "trigger_id": "trig_digital_wallet_checklist",
+    "description": "Applicant indicated digital wallet statements apply per checklist item 12.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.digital_wallet_statements",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_digital_wallet"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 19,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Digital Wallets",
+      "quote": "Digital Wallets: Cash App, VENMO, Pay Pal, Apple Casg etc statements explaining all deposits."
+    }
+  },
+  {
+    "trigger_id": "trig_savings_account_checklist",
+    "description": "Applicant indicated savings account statements apply per checklist item 12.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.savings_account_statements",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_savings_statement"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Savings",
+      "quote": "Saving accounts \u2013 EVERY PAGE \u2013 FRONT AND BACK."
+    }
+  },
+  {
+    "trigger_id": "trig_savings_account_field",
+    "description": "Sanity overlay: savings asset balance is non-zero, implying a savings statement is required.",
+    "activation": {
+      "type": "predicate",
+      "field": "assets.savings",
+      "operator": "greater_than",
+      "value": 0
+    },
+    "emits_requirements": [
+      "req_savings_statement"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Savings",
+      "quote": "Saving accounts \u2013 EVERY PAGE \u2013 FRONT AND BACK."
+    }
+  },
+  {
+    "trigger_id": "trig_revocable_trusts_checklist",
+    "description": "Applicant indicated revocable trusts apply per checklist item 12.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.revocable_trusts",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_revocable_trusts"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Revocable Trusts",
+      "quote": "Revocable trusts"
+    }
+  },
+  {
+    "trigger_id": "trig_revocable_trusts_field",
+    "description": "Sanity overlay: revocable_trusts asset balance is non-zero.",
+    "activation": {
+      "type": "predicate",
+      "field": "assets.revocable_trusts",
+      "operator": "greater_than",
+      "value": 0
+    },
+    "emits_requirements": [
+      "req_revocable_trusts"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Revocable Trusts",
+      "quote": "Revocable trusts"
+    }
+  },
+  {
+    "trigger_id": "trig_equity_rental_checklist",
+    "description": "Applicant indicated equity in rental property/capital investments applies per checklist item 12.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.equity_rental_or_capital_investments",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_equity_rental"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Equity",
+      "quote": "Equity in rental property or other capital investments"
+    }
+  },
+  {
+    "trigger_id": "trig_equity_rental_field",
+    "description": "Sanity overlay: equity_rental_or_capital_investments asset balance is non-zero.",
+    "activation": {
+      "type": "predicate",
+      "field": "assets.equity_rental_or_capital_investments",
+      "operator": "greater_than",
+      "value": 0
+    },
+    "emits_requirements": [
+      "req_equity_rental"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Equity",
+      "quote": "Equity in rental property or other capital investments"
+    }
+  },
+  {
+    "trigger_id": "trig_investment_accounts_checklist",
+    "description": "Applicant indicated investment accounts apply per checklist item 12.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.investment_accounts",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_investment_accounts"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Investment",
+      "quote": "Investment accounts, including stocks, bonds, Treasury Bills, Certificates of Deposit, Mutual Funds, Money Market, Robinhood and all online accounts, etc."
+    }
+  },
+  {
+    "trigger_id": "trig_investment_accounts_field",
+    "description": "Sanity overlay: stocks_bonds_tbills_cd_mutual_funds asset balance is non-zero.",
+    "activation": {
+      "type": "predicate",
+      "field": "assets.stocks_bonds_tbills_cd_mutual_funds",
+      "operator": "greater_than",
+      "value": 0
+    },
+    "emits_requirements": [
+      "req_investment_accounts"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Investment",
+      "quote": "Investment accounts, including stocks, bonds, Treasury Bills, Certificates of Deposit, Mutual Funds, Money Market, Robinhood and all online accounts, etc."
+    }
+  },
+  {
+    "trigger_id": "trig_retirement_accounts_checklist",
+    "description": "Applicant indicated retirement accounts apply per checklist item 12.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.retirement_accounts",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_retirement_accounts"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Retirement",
+      "quote": "Retirement accounts, IRA, Roth IRA, 401K, 403B, etc for all current and past jobs"
+    }
+  },
+  {
+    "trigger_id": "trig_retirement_accounts_field",
+    "description": "Sanity overlay: ira_401k_keogh asset balance is non-zero.",
+    "activation": {
+      "type": "predicate",
+      "field": "assets.ira_401k_keogh",
+      "operator": "greater_than",
+      "value": 0
+    },
+    "emits_requirements": [
+      "req_retirement_accounts"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Retirement",
+      "quote": "Retirement accounts, IRA, Roth IRA, 401K, 403B, etc for all current and past jobs"
+    }
+  },
+  {
+    "trigger_id": "trig_life_insurance_checklist",
+    "description": "Applicant indicated cash value life insurance applies per checklist item 12.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.life_insurance_cash_value",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_life_insurance_cash_value"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Life Insurance",
+      "quote": "Cash value of Whole Life or Universal Life Insurance Policy."
+    }
+  },
+  {
+    "trigger_id": "trig_life_insurance_field",
+    "description": "Sanity overlay: cash_value_life_insurance asset balance is non-zero.",
+    "activation": {
+      "type": "predicate",
+      "field": "assets.cash_value_life_insurance",
+      "operator": "greater_than",
+      "value": 0
+    },
+    "emits_requirements": [
+      "req_life_insurance_cash_value"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Life Insurance",
+      "quote": "Cash value of Whole Life or Universal Life Insurance Policy."
+    }
+  },
+  {
+    "trigger_id": "trig_personal_property_investment_checklist",
+    "description": "Applicant indicated personal property investment applies per checklist item 12.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.personal_property_investment",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_personal_property_investments"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Personal Property",
+      "quote": "Personal Property held as an investment"
+    }
+  },
+  {
+    "trigger_id": "trig_lump_sum_checklist",
+    "description": "Applicant indicated lump sum/one-time receipts apply per checklist item 12.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.lump_sum_one_time_receipts",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_lump_sum_receipts"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 12 - Lump Sum",
+      "quote": "Lump-sum receipts or one-time receipts"
+    }
+  },
+  {
+    "trigger_id": "trig_student_status_checklist",
+    "description": "Applicant indicated student status proof is needed per checklist item 13.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.student_status_proof",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_student_status"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 13",
+      "quote": "Proof of student status for dependent household members over age of 18 and full-time or part-time students. Letter from High School or College providing student status, full time or part time for current or next semester."
+    }
+  },
+  {
+    "trigger_id": "trig_proof_of_pregnancy_checklist",
+    "description": "Applicant indicated proof of pregnancy is applicable per checklist item 14.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.proof_of_pregnancy",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_proof_of_pregnancy"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 14",
+      "quote": "A household may count an unborn child as a household member. The household must submit proof of pregnancy with the application, i.e. letter from doctor."
+    }
+  },
+  {
+    "trigger_id": "trig_divorce_separation_checklist",
+    "description": "Applicant indicated divorce or separation documentation applies per checklist item 15.",
+    "activation": {
+      "type": "predicate",
+      "field": "eligibility_checklist.divorce_or_separation",
+      "operator": "equals",
+      "value": true
+    },
+    "emits_requirements": [
+      "req_divorce_separation"
+    ],
+    "instance_scope": "household",
+    "source_reference": {
+      "document": "Danvers Maple Sq FCFS Application 2026",
+      "page": 20,
+      "section": "Required Personal Identification and Income Verification Documents, Item 15",
+      "quote": "If the applicant is in the process of a divorce or separation, the applicant must provide legal documentation that the divorce or separation has begun or has been finalized."
+    }
+  }
+]
