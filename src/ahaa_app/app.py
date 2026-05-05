@@ -113,7 +113,9 @@ st.set_page_config(
 
 st.title("🏠 HAHA: Help for Affordable Housing Applications")
 
-check_tab, build_tab = st.tabs(["📋 Check My Application", "⚙️ Compliance Engine Config"])
+check_tab, build_tab, update_tab = st.tabs(
+    ["📋 Check My Application", "⚙️ Compliance Engine Config", "🛠️ Update Rule Catalog"]
+)
 
 with check_tab:
     st.write(
@@ -126,7 +128,7 @@ with check_tab:
         eval_mode = st.toggle("⚙️ Eval Mode", value=False)
         catalog_options = get_catalog_options()
         selected_catalog = st.selectbox(
-            "Select the Housing Program for your application.",
+            "Select the Housing Program Rule Catalog.",
             options=catalog_options,
             index=0 if catalog_options else None,
             placeholder="No housing problem rule catalogs available",
@@ -206,7 +208,7 @@ with build_tab:
         compliance_engine_id = st.text_input(
             "Program Rule Catalog ID",
             max_chars=64,
-            placeholder="mco_maple_square_v3",
+            placeholder="Enter an identifier for your housing program's rule catalog.",
             key="compliance_engine_id",
         )
 
@@ -256,3 +258,42 @@ with build_tab:
             )
         except Exception as exc:
             st.exception(exc)
+
+with update_tab:
+    st.write("Hello, Housing Provider! Update your existing rule catalog using flagged feedback from user applications.")
+
+    with st.container(border=True):
+        catalog_options = get_catalog_options()
+        selected_update_catalog = st.selectbox(
+            "Select the Housing Program Rule Catalog.",
+            options=catalog_options,
+            index=0 if catalog_options else None,
+            placeholder="No housing problem rule catalogs available",
+            key="update_catalog_select",
+        )
+
+    with st.form("update_rule_catalog_form"):
+        st.subheader("Upload Feedback Data")
+        st.write(
+            "Upload the flagged user application, supporting document bundle, and the "
+            "output from the compliance engine with feedback notes."
+        )
+        feedback_files = st.file_uploader(
+            "Upload feedback data documents",
+            type=None,
+            accept_multiple_files=True,
+            key="feedback_data_upload",
+        )
+
+        update_rules_clicked = st.form_submit_button("🤖 Update Rule Catalog")
+
+    if update_rules_clicked:
+        if selected_update_catalog is None:
+            st.error("Please choose a rule catalog before updating.")
+        elif feedback_files is None or len(feedback_files) == 0:
+            st.error("Please upload feedback data before updating the rule catalog.")
+        else:
+            st.success(
+                f"Ready to update {selected_update_catalog} with "
+                f"{len(feedback_files)} feedback file(s)."
+            )
