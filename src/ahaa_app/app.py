@@ -1,5 +1,6 @@
 import json
 import shutil
+import tempfile
 import time
 from pathlib import Path
 
@@ -14,14 +15,12 @@ from ui_components import (
     render_trigger_details_accordion,
 )
 
-# hard coded family and bundle id to pull from usecases
-TEST_FAMILY_ID = 4
-TEST_BUNDLE_ID = 4
-
 BASE_DIR =  Path(__file__).parent.parent.parent # 14c-housing
 # this directory contains rule catalogs available in the app dropdown
 CATALOGS_DIR = BASE_DIR / "catalogs"
-# copies catalog files in this directory to simulate "generating" new llm-based rule catalogs 
+# uploaded family/bundle JSON are persisted here so the saved-feedback flow can copy them
+UPLOADS_DIR = Path(tempfile.gettempdir()) / "ahaa_uploads"
+# copies catalog files in this directory to simulate "generating" new llm-based rule catalogs
 LLM_GEN_CATALOG_DIR = BASE_DIR / "catalog_templates" / "mco_maple_square_llm"
 ENGINE_ID_ALLOWED_CHARS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-")
 
@@ -33,6 +32,12 @@ def get_catalog_options():
         for catalog_dir in CATALOGS_DIR.iterdir()
         if catalog_dir.is_dir()
     )
+
+def save_uploaded_json(uploaded_file, dest_name):
+    UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+    dest_path = UPLOADS_DIR / dest_name
+    dest_path.write_bytes(uploaded_file.getvalue())
+    return dest_path
 
 def get_catalog_filepaths(catalog_version):
     catalog_dir = CATALOGS_DIR / catalog_version
@@ -62,12 +67,6 @@ def read_trigger_catalog(catalog_id):
         )
 
     return triggers
-
-def get_test_filepaths(fam_id, bun_id, catalog_version='mco_maple_square_v0'):
-    family_app_filepath = BASE_DIR / f"evals/usecases/family_{fam_id}.json"
-    doc_bundle_filepath = BASE_DIR / f"evals/usecases/bundle_{bun_id}.json"
-    trigger_catalog_filepath, req_catalog_filepath = get_catalog_filepaths(catalog_version)
-    return family_app_filepath, doc_bundle_filepath, trigger_catalog_filepath, req_catalog_filepath
 
 def get_compliance_engine_dir(engine_id):
     cleaned_engine_id = engine_id.strip()
@@ -149,17 +148,17 @@ with check_tab:
     with st.form("eligibility_form"):
         st.subheader("Application Upload")
         application_file = st.file_uploader(
-            "Upload a single application file",
-            type=None,
+            "Upload the family application JSON",
+            type=["json"],
             accept_multiple_files=False,
             key="application_upload",
         )
 
         st.subheader("Document Bundle Upload")
-        bundle_files = st.file_uploader(
-            "Upload one or more supporting documents",
-            type=None,
-            accept_multiple_files=True,
+        bundle_file = st.file_uploader(
+            "Upload the document bundle JSON",
+            type=["json"],
+            accept_multiple_files=False,
             key="bundle_upload",
         )
 
@@ -169,14 +168,14 @@ with check_tab:
         if selected_catalog is None:
             st.error("Please choose a catalog before running the check.")
         elif application_file is None:
-            st.error("Please upload an application file before running the check.")
-        elif bundle_files is None or len(bundle_files) == 0:
-            st.error("Please upload required document files before running the check.")
+            st.error("Please upload an application JSON before running the check.")
+        elif bundle_file is None:
+            st.error("Please upload a document bundle JSON before running the check.")
         else:
             try:
-                family_app_filepath, doc_bundle_filepath, trigger_catalog_filepath, req_catalog_filepath = (
-                    get_test_filepaths(TEST_FAMILY_ID, TEST_BUNDLE_ID, selected_catalog)
-                )
+                family_app_filepath = save_uploaded_json(application_file, "family_application.json")
+                doc_bundle_filepath = save_uploaded_json(bundle_file, "document_bundle.json")
+                trigger_catalog_filepath, req_catalog_filepath = get_catalog_filepaths(selected_catalog)
                 overall_pass, triggers, total_missing_docs = check_doc(
                     family_app_filepath,
                     doc_bundle_filepath,
