@@ -77,5 +77,3 @@ Each saved feedback folder contains:
 - `family_application.json`: copy of the family application used for the check.
 - `document_bundle.json`: copy of the document bundle used for the check.
 - `feedback.json`: reviewer feedback, flagged items, overall pass/fail value, and trigger data.
-
-The random suffix keeps separate review saves from overwriting each other.
