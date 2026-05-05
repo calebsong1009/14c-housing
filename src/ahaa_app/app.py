@@ -8,20 +8,40 @@ from ui_components import (
     render_trigger_details_accordion,
 )
 
+BASE_DIR =  Path(__file__).parent.parent.parent # 14c-housing
+CATALOGS_DIR = BASE_DIR / "catalogs"
 
-def get_test_filepaths(num):
-    base_dir =  Path(__file__).parent.parent.parent # 14c-housing
-    ex_num = num
-    family_app_filepath = base_dir / f"evals/usecases/family_{ex_num}.json"
-    doc_bundle_filepath = base_dir / f"evals/usecases/bundle_{ex_num}.json"
-    trigger_catalog_filepath = base_dir / 'catalog_templates/trigger_catalog.json'
-    req_catalog_filepath = base_dir / 'catalog_templates/req_catalog.json'
+def get_catalog_options():
+    if not CATALOGS_DIR.exists():
+        return []
+    return sorted(
+        catalog_dir.name
+        for catalog_dir in CATALOGS_DIR.iterdir()
+        if catalog_dir.is_dir()
+    )
+
+def get_catalog_filepaths(catalog_version):
+    catalog_dir = CATALOGS_DIR / catalog_version
+    trigger_catalog_filepath = catalog_dir / 'trigger_catalog.json'
+    req_catalog_filepath = catalog_dir / 'req_catalog.json'
+    missing_files = [
+        path.name
+        for path in (trigger_catalog_filepath, req_catalog_filepath)
+        if not path.exists()
+    ]
+
+    if missing_files:
+        raise FileNotFoundError(
+            f"Catalog '{catalog_version}' is missing: {', '.join(missing_files)}"
+        )
+
+    return trigger_catalog_filepath, req_catalog_filepath
+
+def get_test_filepaths(fam_id, bun_id, catalog_version='mco_maple_square_v0'):
+    family_app_filepath = BASE_DIR / f"evals/usecases/family_{fam_id}.json"
+    doc_bundle_filepath = BASE_DIR / f"evals/usecases/bundle_{bun_id}.json"
+    trigger_catalog_filepath, req_catalog_filepath = get_catalog_filepaths(catalog_version)
     return family_app_filepath, doc_bundle_filepath, trigger_catalog_filepath, req_catalog_filepath
-
-
-def test_check_doc(num):
-    filepaths = get_test_filepaths(num)
-    return check_doc(*filepaths)
 
 @st.cache_resource
 def get_feedback_save_url():
@@ -41,6 +61,16 @@ st.write(
     "check to see whether any required documents may be missing."
 )
 
+with st.container(border=True):
+    eval_mode = st.toggle("Eval Mode", value=False)
+    catalog_options = get_catalog_options()
+    selected_catalog = st.selectbox(
+        "Catalog",
+        options=catalog_options,
+        index=0 if catalog_options else None,
+        placeholder="No catalogs available",
+    )
+
 with st.form("eligibility_form"):
     st.subheader("Application Upload")
     application_file = st.file_uploader(
@@ -58,26 +88,21 @@ with st.form("eligibility_form"):
         key="bundle_upload",
     )
 
-    check_col, spacer_col, eval_col = st.columns([1, 2, 1])
-    with check_col:
-        check_clicked = st.form_submit_button("Check")
-    with spacer_col:
-        st.empty()
-    with eval_col:
-        eval_mode = st.toggle("Eval Mode", value=False)
+    check_clicked = st.form_submit_button("Check")
 
 
 if check_clicked:
-    if application_file is None:
+    if selected_catalog is None:
+        st.error("Please choose a catalog before running the check.")
+    elif application_file is None:
         st.error("Please upload an application file before running the check.")
     elif bundle_files is None or len(bundle_files) == 0:
         st.error("Please upload required document files before running the check.")
     else:
         try:
             
-            # overall_pass, triggers = dummy_check_doc(application_file, bundle_files or [])
             family_app_filepath, doc_bundle_filepath, trigger_catalog_filepath, req_catalog_filepath = (
-                get_test_filepaths(3)
+                get_test_filepaths(4, 4, selected_catalog)
             )
             overall_pass, triggers, total_missing_docs = check_doc(
                 family_app_filepath,

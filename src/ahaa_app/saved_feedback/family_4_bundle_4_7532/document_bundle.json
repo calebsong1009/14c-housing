@@ -1,0 +1,20 @@
+{
+  "bundle_id": "bundle_4",
+  "documents": [
+    "passport.pdf",
+    "utility_bill.pdf",
+    "pay_stub_1.pdf",
+    "pay_stub_2.pdf",
+    "pay_stub_3.pdf",
+    "pay_stub_4.pdf",
+    "pay_stub_5.pdf",
+    "benefit_letters_and_social_security.pdf",
+    "checking_statement_march2025.pdf",
+    "savings_statement_march2025.pdf",
+    "retirement_accounts.pdf",
+    "employment_offer_letter.pdf",
+    "affidavit_and_disclosure_form.pdf",
+    "application_tips_signed.pdf",
+    "release_of_information_authorization.pdf"
+  ]
+}

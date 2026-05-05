@@ -1,0 +1,355 @@
+{
+  "overall_pass": false,
+  "overall_flag": true,
+  "overall_feedback": "kjafsksjsahatr4",
+  "fired_triggers": [
+    {
+      "trigger_id": "trig_household_member_id",
+      "description": "Every household member needs identification",
+      "fired": true,
+      "source_reference": {
+        "document": "Maple Square FCFS Application 2026",
+        "page": 18,
+        "section": "Required Documents item 1",
+        "quote": null
+      },
+      "requirement_fulfilled": true,
+      "instances": [
+        {
+          "instance_label": "req_household_member_id::Priya Patel",
+          "requirement_id": "req_household_member_id",
+          "applies_to_member": "Priya Patel",
+          "fulfilled": true,
+          "missing_documents": []
+        }
+      ],
+      "all_missing_docs": [],
+      "flag": false,
+      "feedback": ""
+    },
+    {
+      "trigger_id": "trig_local_preference",
+      "description": "Self-attested local preference \u2192 require proof",
+      "fired": true,
+      "source_reference": {
+        "document": "Maple Square FCFS Application 2026",
+        "page": 18,
+        "section": "Required Documents item 3",
+        "quote": null
+      },
+      "requirement_fulfilled": true,
+      "instances": [
+        {
+          "instance_label": "req_local_preference",
+          "requirement_id": "req_local_preference",
+          "applies_to_member": null,
+          "fulfilled": true,
+          "missing_documents": []
+        }
+      ],
+      "all_missing_docs": [],
+      "flag": false,
+      "feedback": ""
+    },
+    {
+      "trigger_id": "trig_pay_stubs_checklist",
+      "description": "Self-attested wage income \u2192 require 5 consecutive pay stubs",
+      "fired": true,
+      "source_reference": {
+        "document": "Maple Square FCFS Application 2026",
+        "page": 18,
+        "section": "Required Documents item 5",
+        "quote": null
+      },
+      "requirement_fulfilled": true,
+      "instances": [
+        {
+          "instance_label": "req_pay_stubs",
+          "requirement_id": "req_pay_stubs",
+          "applies_to_member": null,
+          "fulfilled": true,
+          "missing_documents": []
+        }
+      ],
+      "all_missing_docs": [],
+      "flag": false,
+      "feedback": ""
+    },
+    {
+      "trigger_id": "trig_pay_stubs_structured",
+      "description": "Date-of-hire present in employment \u2192 require pay stubs (sanity overlay)",
+      "fired": true,
+      "source_reference": {
+        "document": "Maple Square FCFS Application 2026",
+        "page": 14,
+        "section": "Employment Status \u2014 Date of Hire",
+        "quote": null
+      },
+      "requirement_fulfilled": true,
+      "instances": [
+        {
+          "instance_label": "req_pay_stubs",
+          "requirement_id": "req_pay_stubs",
+          "applies_to_member": null,
+          "fulfilled": true,
+          "missing_documents": []
+        }
+      ],
+      "all_missing_docs": [],
+      "flag": false,
+      "feedback": ""
+    },
+    {
+      "trigger_id": "trig_employment_offer_letter",
+      "description": "Date-of-hire present (interpreted as last 12 months for MVP) \u2192 offer letter",
+      "fired": true,
+      "source_reference": {
+        "document": "Maple Square FCFS Application 2026",
+        "page": 18,
+        "section": "Required Documents item 5 NOTE",
+        "quote": null
+      },
+      "requirement_fulfilled": true,
+      "instances": [
+        {
+          "instance_label": "req_employment_offer_letter",
+          "requirement_id": "req_employment_offer_letter",
+          "applies_to_member": null,
+          "fulfilled": true,
+          "missing_documents": []
+        }
+      ],
+      "all_missing_docs": [],
+      "flag": false,
+      "feedback": ""
+    },
+    {
+      "trigger_id": "trig_federal_tax_return",
+      "description": "Federal tax return required of every applicant",
+      "fired": true,
+      "source_reference": {
+        "document": "Maple Square FCFS Application 2026",
+        "page": 19,
+        "section": "Required Documents item 9",
+        "quote": null
+      },
+      "requirement_fulfilled": false,
+      "instances": [
+        {
+          "instance_label": "req_federal_tax_return",
+          "requirement_id": "req_federal_tax_return",
+          "applies_to_member": null,
+          "fulfilled": false,
+          "missing_documents": [
+            "federal_tax_return_2024.pdf",
+            "irs_non_filing_verification.pdf"
+          ]
+        }
+      ],
+      "all_missing_docs": [
+        "federal_tax_return_2024.pdf",
+        "irs_non_filing_verification.pdf"
+      ],
+      "flag": true,
+      "feedback": ""
+    },
+    {
+      "trigger_id": "trig_w2_1099r",
+      "description": "Self-attested W-2 / 1099-R \u2192 require the form",
+      "fired": true,
+      "source_reference": {
+        "document": "Maple Square FCFS Application 2026",
+        "page": 19,
+        "section": "Required Documents item 10",
+        "quote": null
+      },
+      "requirement_fulfilled": false,
+      "instances": [
+        {
+          "instance_label": "req_w2_1099r",
+          "requirement_id": "req_w2_1099r",
+          "applies_to_member": null,
+          "fulfilled": false,
+          "missing_documents": [
+            "w2_2024.pdf",
+            "1099r_2024.pdf"
+          ]
+        }
+      ],
+      "all_missing_docs": [
+        "w2_2024.pdf",
+        "1099r_2024.pdf"
+      ],
+      "flag": true,
+      "feedback": ""
+    },
+    {
+      "trigger_id": "trig_checking_checklist",
+      "description": "Self-attested checking account \u2192 require statement",
+      "fired": true,
+      "source_reference": {
+        "document": "Maple Square FCFS Application 2026",
+        "page": 19,
+        "section": "Required Documents item 12 \u2014 Checking",
+        "quote": null
+      },
+      "requirement_fulfilled": true,
+      "instances": [
+        {
+          "instance_label": "req_checking_statement",
+          "requirement_id": "req_checking_statement",
+          "applies_to_member": null,
+          "fulfilled": true,
+          "missing_documents": []
+        }
+      ],
+      "all_missing_docs": [],
+      "flag": false,
+      "feedback": ""
+    },
+    {
+      "trigger_id": "trig_checking_structured",
+      "description": "Structured checking balance > 0 \u2192 require statement",
+      "fired": true,
+      "source_reference": {
+        "document": "Maple Square FCFS Application 2026",
+        "page": 14,
+        "section": "Household Assets \u2014 Checking",
+        "quote": null
+      },
+      "requirement_fulfilled": true,
+      "instances": [
+        {
+          "instance_label": "req_checking_statement",
+          "requirement_id": "req_checking_statement",
+          "applies_to_member": null,
+          "fulfilled": true,
+          "missing_documents": []
+        }
+      ],
+      "all_missing_docs": [],
+      "flag": false,
+      "feedback": ""
+    },
+    {
+      "trigger_id": "trig_savings_checklist",
+      "description": "Self-attested savings account \u2192 require statement",
+      "fired": true,
+      "source_reference": {
+        "document": "Maple Square FCFS Application 2026",
+        "page": 20,
+        "section": "Required Documents item 12 \u2014 Savings",
+        "quote": null
+      },
+      "requirement_fulfilled": true,
+      "instances": [
+        {
+          "instance_label": "req_savings_statement",
+          "requirement_id": "req_savings_statement",
+          "applies_to_member": null,
+          "fulfilled": true,
+          "missing_documents": []
+        }
+      ],
+      "all_missing_docs": [],
+      "flag": false,
+      "feedback": ""
+    },
+    {
+      "trigger_id": "trig_savings_structured",
+      "description": "Structured savings balance > 0 \u2192 require statement",
+      "fired": true,
+      "source_reference": {
+        "document": "Maple Square FCFS Application 2026",
+        "page": 14,
+        "section": "Household Assets \u2014 Savings",
+        "quote": null
+      },
+      "requirement_fulfilled": true,
+      "instances": [
+        {
+          "instance_label": "req_savings_statement",
+          "requirement_id": "req_savings_statement",
+          "applies_to_member": null,
+          "fulfilled": true,
+          "missing_documents": []
+        }
+      ],
+      "all_missing_docs": [],
+      "flag": false,
+      "feedback": ""
+    },
+    {
+      "trigger_id": "trig_affidavit_and_disclosure",
+      "description": "Affidavit & Disclosure Form required of every applicant",
+      "fired": true,
+      "source_reference": {
+        "document": "Maple Square FCFS Application 2026",
+        "page": 15,
+        "section": "Affidavit & Disclosure Form",
+        "quote": null
+      },
+      "requirement_fulfilled": true,
+      "instances": [
+        {
+          "instance_label": "req_affidavit_and_disclosure",
+          "requirement_id": "req_affidavit_and_disclosure",
+          "applies_to_member": null,
+          "fulfilled": true,
+          "missing_documents": []
+        }
+      ],
+      "all_missing_docs": [],
+      "flag": false,
+      "feedback": ""
+    },
+    {
+      "trigger_id": "trig_application_tips",
+      "description": "Signed Application Tips required of every applicant",
+      "fired": true,
+      "source_reference": {
+        "document": "Maple Square FCFS Application 2026",
+        "page": 17,
+        "section": "Application Tips",
+        "quote": null
+      },
+      "requirement_fulfilled": true,
+      "instances": [
+        {
+          "instance_label": "req_application_tips",
+          "requirement_id": "req_application_tips",
+          "applies_to_member": null,
+          "fulfilled": true,
+          "missing_documents": []
+        }
+      ],
+      "all_missing_docs": [],
+      "flag": false,
+      "feedback": ""
+    },
+    {
+      "trigger_id": "trig_release_of_information",
+      "description": "Release of Information Authorization Form required of every applicant",
+      "fired": true,
+      "source_reference": {
+        "document": "Maple Square FCFS Application 2026",
+        "page": 24,
+        "section": "Release of Information Authorization Form",
+        "quote": null
+      },
+      "requirement_fulfilled": true,
+      "instances": [
+        {
+          "instance_label": "req_release_of_information",
+          "requirement_id": "req_release_of_information",
+          "applies_to_member": null,
+          "fulfilled": true,
+          "missing_documents": []
+        }
+      ],
+      "all_missing_docs": [],
+      "flag": false,
+      "feedback": ""
+    }
+  ]
+}

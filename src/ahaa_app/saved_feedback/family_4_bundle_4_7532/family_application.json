@@ -1,0 +1,87 @@
+{
+  "family_id": "family_4",
+  "personal_information": {
+    "name": "Priya Patel",
+    "address": "55 Oak Lane",
+    "town": "Boston",
+    "zip": "02118",
+    "phone_home": null,
+    "phone_work": "617-555-0483",
+    "phone_cell": "617-555-0129",
+    "email": "ppatel@email.com",
+    "ever_owned_home": false,
+    "home_sold_date": null,
+    "section_8_or_housing_voucher": false,
+    "bedroom_size": "one_bedroom",
+    "requires_wheelchair_accessible_unit": false,
+    "requires_special_accommodation": false,
+    "special_accommodation_details": null
+  },
+  "household": {
+    "total_size": 1,
+    "members": [
+      {
+        "name": "Priya Patel",
+        "relationship": "applicant",
+        "age": 26
+      }
+    ]
+  },
+  "financials": {
+    "applicant_monthly_base_income_gross": 3500,
+    "applicant_other_income_type": null,
+    "applicant_other_income_amount": null,
+    "co_applicant_monthly_base_income_gross": null,
+    "co_applicant_other_income_type": null,
+    "co_applicant_other_income_amount": null,
+    "total_monthly_income": 3500
+  },
+  "assets": {
+    "checking": 2200,
+    "savings": 5000,
+    "debit_card": null,
+    "stocks_bonds_tbills_cd_mutual_funds": null,
+    "ira_401k_keogh": null,
+    "retirement_pension_withdrawable": null,
+    "revocable_trusts": null,
+    "equity_rental_or_capital_investments": null,
+    "cash_value_life_insurance": null,
+    "total_assets": 7200
+  },
+  "employment": {
+    "employer_name": "Patel Consulting Group",
+    "employer_address": "400 Congress St",
+    "employer_city_state_zip": "Boston, MA 02118",
+    "date_of_hire": "2023-01-10",
+    "annual_wage_base": 42000,
+    "annual_wage_additional": null
+  },
+  "eligibility_checklist": {
+    "household_member_identification": true,
+    "section_8_or_housing_voucher": false,
+    "proof_of_local_preference": true,
+    "special_accommodation_documentation": false,
+    "pay_stubs": true,
+    "benefit_letter": false,
+    "child_support_alimony": false,
+    "self_employment": false,
+    "federal_tax_returns_2024": false,
+    "irs_non_filing_verification": false,
+    "w2_1099r": true,
+    "interest_dividends_income": false,
+    "checking_account_statements": true,
+    "prepaid_debit_card_statements": false,
+    "digital_wallet_statements": false,
+    "savings_account_statements": true,
+    "revocable_trusts": false,
+    "equity_rental_or_capital_investments": false,
+    "investment_accounts": false,
+    "retirement_accounts": false,
+    "life_insurance_cash_value": false,
+    "personal_property_investment": false,
+    "lump_sum_one_time_receipts": false,
+    "student_status_proof": false,
+    "proof_of_pregnancy": false,
+    "divorce_or_separation": false
+  }
+}
