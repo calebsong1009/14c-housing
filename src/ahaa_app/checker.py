@@ -9,6 +9,20 @@ from compliance_checker.compliance_check import build_report
 
 TriggerDict = Dict[str, Dict[str, Any]]
 
+def get_missing_documents(instance):
+    missing_documents = list(instance.get("missing_documents", []))
+    missing_documents_type = instance.get("missing_documents_type", {})
+
+    missing_documents.extend(missing_documents_type.get("missing_all_of", []))
+
+    missing_any_of = missing_documents_type.get("missing_any_of", [])
+    if len(missing_any_of) == 1:
+        missing_documents.append(missing_any_of[0])
+    elif len(missing_any_of) > 1:
+        missing_documents.append(f"one of: {', '.join(missing_any_of)}")
+
+    return missing_documents
+
 def dummy_check_doc(application_file, document_bundle_files) -> Tuple[bool, TriggerDict]:
     """
     Runs dummy document eligibility checks.
@@ -158,7 +172,9 @@ def check_doc(family_app_filepath, doc_bundle_filepath,
                 if bool(instance['fulfilled']) == False:
                     member = instance.get("applies_to_member", "")
                     member = "" if member in (None, "null", "") else f"{member} - "
-                    missing_docs.extend([f'{member}'+doc for doc in instance.get('missing_documents',[])])
+                    missing_docs.extend(
+                        f"{member}{doc}" for doc in get_missing_documents(instance)
+                    )
         trig['all_missing_docs'] = missing_docs
         total_missing_docs.extend(missing_docs)
     

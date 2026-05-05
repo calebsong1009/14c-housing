@@ -50,12 +50,6 @@ def _trigger_card(trigger_data, index, eval_mode=False):
     # get display for all missing docs
     missing_docs_field = ""
     if not passed:
-        # all_missing_docs = []
-        # for instance in trigger_data.get('instances',[]):
-        #     if bool(instance['fulfilled']) == False:
-        #         member = instance.get("applies_to_member", "")
-        #         member = "" if (member is None) or (member.isin(['null',''])) else (member+' - ')
-        #         all_missing_docs.extend([f'{member}'+doc for doc in instance.get('missing_documents',[])])
         all_missing_docs = trigger_data.get("all_missing_docs",[])
         missing_docs_field = f"""<p><strong>Missing Documents:</strong></p>
                 <ul>{_requirement_items(all_missing_docs)}</ul>
@@ -117,6 +111,25 @@ def _trigger_card(trigger_data, index, eval_mode=False):
     """
 
 
+def _catalog_trigger_card(trigger_data, index):
+    raw_description = trigger_data.get("description", "No description provided.")
+    source_ref = trigger_data.get("source_reference", {})
+    header = f"{index}. {raw_description}"
+
+    return f"""
+        <section class="trigger-card catalog-trigger-card">
+            <div class="trigger-summary catalog-trigger-header">
+                {escape(header)}
+            </div>
+            <div class="trigger-body">
+                <p><strong>Trigger ID:</strong> {escape(str(trigger_data.get("trigger_id", "unknown")))}</p>
+                <p><strong>Application Guideline Reference:</strong></p>
+                <p>This requirement was extracted from the <i>{escape(str(source_ref.get("document", "unknown")))}</i> document, page {escape(str(source_ref.get("page", "unknown")))}, section "{escape(str(source_ref.get("section", "unknown")))}".</p>
+            </div>
+        </section>
+    """
+
+
 def _trigger_count_height(triggers, eval_mode=False):
     requirement_count = 0
     for trigger_data in triggers:
@@ -128,6 +141,10 @@ def _trigger_count_height(triggers, eval_mode=False):
     min_height = 520 if eval_mode else 220
 
     return max(min_height, base + len(triggers) * per_trigger + requirement_count * 28)
+
+
+def _catalog_trigger_list_height(triggers):
+    return min(max(420, 80 + len(triggers) * 180), 760)
 
 
 def _shared_css():
@@ -277,6 +294,15 @@ def _shared_css():
                 border-radius: 0.35rem;
                 margin: 0.75rem 0;
                 overflow: hidden;
+            }
+
+            .catalog-trigger-card {
+                border-color: #d9dde3;
+            }
+
+            .catalog-trigger-header {
+                background: #f6f7f9;
+                color: #262730;
             }
 
             .trigger-summary {
@@ -476,6 +502,24 @@ def render_trigger_details_accordion(triggers):
         """,
         height=height,
         scrolling=False,
+    )
+
+
+def render_catalog_trigger_list(triggers):
+    trigger_content = "".join(
+        _catalog_trigger_card(trigger_data, index)
+        for index, trigger_data in enumerate(triggers, start=1)
+    )
+    if not trigger_content:
+        trigger_content = '<div class="empty-feedback">No triggers were returned.</div>'
+
+    components.html(
+        f"""
+        {_shared_css()}
+        <div class="trigger-list">{trigger_content}</div>
+        """,
+        height=_catalog_trigger_list_height(triggers),
+        scrolling=True,
     )
 
 
