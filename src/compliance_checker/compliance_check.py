@@ -25,7 +25,10 @@ Output JSON shape:
           "requirement_id": str,
           "applies_to_member": str | null,
           "fulfilled": bool,
-          "missing_documents": [str]          // empty when fulfilled
+          "missing_documents_type": {         // empty lists when fulfilled
+            "missing_all_of": [str],          // every listed doc is individually required
+            "missing_any_of": [str]           // at least one of the listed docs is required
+          }
         }
       ]
     }
@@ -89,7 +92,10 @@ def build_report(
                 "requirement_id": e["requirement_id"],
                 "applies_to_member": e.get("applies_to_member"),
                 "fulfilled": e["satisfied"],
-                "missing_documents": e["missing_document_types"],
+                "missing_documents_type": {
+                    "missing_all_of": e["missing_document_types"]["all_of"],
+                    "missing_any_of": e["missing_document_types"]["any_of"],
+                },
             }
             for e in instances_by_trigger.get(trigger_id, [])
         ]

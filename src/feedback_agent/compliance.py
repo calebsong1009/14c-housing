@@ -42,32 +42,36 @@ def _eval_condition(condition: dict, data: dict) -> bool:
     raise ValueError(f"Unknown condition type: {t!r}")
 
 
-def _eval_doc_spec(spec: dict, documents: list[str]) -> tuple[bool, list[str]]:
-    """Returns (satisfied, list_of_missing_document_types)."""
+def _eval_doc_spec(spec: dict, documents: list[str]) -> tuple[bool, dict]:
+    """Returns (satisfied, {"all_of": [...], "any_of": [...]}) with missing document types."""
     t = spec["type"]
 
     if t == "document":
         hit = spec["document_type"] in documents
-        return hit, ([] if hit else [spec["document_type"]])
+        return hit, ({"all_of": [], "any_of": []} if hit else {"all_of": [spec["document_type"]], "any_of": []})
 
     if t == "all_of":
-        missing: list[str] = []
+        all_of_missing: list[str] = []
+        any_of_missing: list[str] = []
         for child in spec["children"]:
             ok, child_missing = _eval_doc_spec(child, documents)
             if not ok:
-                missing.extend(child_missing)
-        return len(missing) == 0, missing
+                all_of_missing.extend(child_missing["all_of"])
+                any_of_missing.extend(child_missing["any_of"])
+        satisfied = not all_of_missing and not any_of_missing
+        return satisfied, {"all_of": all_of_missing, "any_of": any_of_missing}
 
     if t == "one_of":
         for child in spec["children"]:
             ok, _ = _eval_doc_spec(child, documents)
             if ok:
-                return True, []
-        all_options: list[str] = []
+                return True, {"all_of": [], "any_of": []}
+        any_of_options: list[str] = []
         for child in spec["children"]:
             _, child_missing = _eval_doc_spec(child, documents)
-            all_options.extend(child_missing)
-        return False, all_options
+            any_of_options.extend(child_missing["all_of"])
+            any_of_options.extend(child_missing["any_of"])
+        return False, {"all_of": [], "any_of": any_of_options}
 
     raise ValueError(f"Unknown document_spec type: {t!r}")
 
@@ -168,7 +172,7 @@ def run_compliance_trace(
                     req_trace_map[label]["triggered_by"].append(trigger["trigger_id"])
                     if satisfied:  # once satisfied by any trigger path, it's satisfied
                         req_trace_map[label]["satisfied"] = True
-                        req_trace_map[label]["missing_document_types"] = []
+                        req_trace_map[label]["missing_document_types"] = {"all_of": [], "any_of": []}
                 else:
                     req_trace_map[label] = {
                         "requirement_id": req_id,
