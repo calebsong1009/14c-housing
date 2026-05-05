@@ -1,21 +1,33 @@
 import streamlit as st
 from pathlib import Path
 from checker import check_doc
+from feedback_server import start_feedback_server
 from ui_components import (
     render_eval_results,
     render_status_banner,
     render_trigger_details_accordion,
 )
 
-def test_check_doc(num):
+
+def get_test_filepaths(num):
     base_dir =  Path(__file__).parent.parent.parent # 14c-housing
     ex_num = num
-    print('base_dir', base_dir)
-    family_app_filepath = base_dir / f'evals/usecases/family_{ex_num}.json'
-    doc_bundle_filepath = base_dir / f'evals/usecases/bundle_{ex_num}.json'
+    family_app_filepath = base_dir / f"evals/usecases/family_{ex_num}.json"
+    doc_bundle_filepath = base_dir / f"evals/usecases/bundle_{ex_num}.json"
     trigger_catalog_filepath = base_dir / 'catalog_templates/trigger_catalog.json'
     req_catalog_filepath = base_dir / 'catalog_templates/req_catalog.json'
-    return check_doc(family_app_filepath,doc_bundle_filepath,trigger_catalog_filepath,req_catalog_filepath)
+    return family_app_filepath, doc_bundle_filepath, trigger_catalog_filepath, req_catalog_filepath
+
+
+def test_check_doc(num):
+    filepaths = get_test_filepaths(num)
+    return check_doc(*filepaths)
+
+
+@st.cache_resource
+def get_feedback_save_url():
+    save_dir = Path(__file__).resolve().parent / "saved_feedback"
+    return start_feedback_server(save_dir)
 
 st.set_page_config(
     page_title="HAHA",
@@ -65,13 +77,28 @@ if check_clicked:
         try:
             
             # overall_pass, triggers = dummy_check_doc(application_file, bundle_files or [])
-            overall_pass, triggers = test_check_doc(3)
+            family_app_filepath, doc_bundle_filepath, trigger_catalog_filepath, req_catalog_filepath = (
+                get_test_filepaths(3)
+            )
+            overall_pass, triggers, total_missing_docs = check_doc(
+                family_app_filepath,
+                doc_bundle_filepath,
+                trigger_catalog_filepath,
+                req_catalog_filepath,
+            )
 
             st.divider()
             if eval_mode:
-                render_eval_results(overall_pass, triggers)
+                render_eval_results(
+                    overall_pass,
+                    triggers,
+                    total_missing_docs,
+                    get_feedback_save_url(),
+                    family_app_filepath,
+                    doc_bundle_filepath,
+                )
             else:
-                render_status_banner("Document bundle passed", overall_pass)
+                render_status_banner("Document bundle passed", overall_pass, total_missing_docs)
 
                 if not triggers:
                     st.info("No triggers were returned.")

@@ -1,3 +1,4 @@
+import json
 from html import escape
 from pathlib import Path
 
@@ -26,6 +27,10 @@ def _eval_feedback_js():
     return (Path(__file__).with_name("eval_feedback.js")).read_text()
 
 
+def _json_script_payload(value):
+    return json.dumps(value).replace("</", "<\\/")
+
+
 def _requirement_items(requirement_ids):
     if not requirement_ids:
         return "<li>None</li>"
@@ -45,13 +50,13 @@ def _trigger_card(trigger_data, index, eval_mode=False):
     # get display for all missing docs
     missing_docs_field = ""
     if not passed:
-        all_missing_docs = []
-        for instance in trigger_data.get('instances',[]):
-            if bool(instance['fulfilled']) == False:
-                member = instance.get("applies_to_member", "")
-                member = "" if (member is None) or (member.isin(['null',''])) else (member+' - ')
-                all_missing_docs.extend([f'{member}'+doc for doc in instance.get('missing_documents',[])])
-
+        # all_missing_docs = []
+        # for instance in trigger_data.get('instances',[]):
+        #     if bool(instance['fulfilled']) == False:
+        #         member = instance.get("applies_to_member", "")
+        #         member = "" if (member is None) or (member.isin(['null',''])) else (member+' - ')
+        #         all_missing_docs.extend([f'{member}'+doc for doc in instance.get('missing_documents',[])])
+        all_missing_docs = trigger_data.get("all_missing_docs",[])
         missing_docs_field = f"""<p><strong>Missing Documents:</strong></p>
                 <ul>{_requirement_items(all_missing_docs)}</ul>
                 <p></p>
@@ -389,7 +394,7 @@ def _status_banner_html(label, passed, include_flag=False):
     """
 
 
-def render_status_banner(label, passed):
+def render_status_banner(label, passed, missing_docs):
     components.html(
         f"{_shared_css()}{_status_banner_html(label, passed)}",
         height=84,
@@ -417,7 +422,14 @@ def render_trigger_details_accordion(triggers):
     )
 
 
-def render_eval_results(overall_pass, triggers):
+def render_eval_results(
+    overall_pass,
+    triggers,
+    missing_docs,
+    feedback_save_url,
+    family_app_filepath,
+    doc_bundle_filepath,
+):
     trigger_content = "".join(
         _trigger_card(trigger_data, index, eval_mode=True)
         for index, (trigger_data) in enumerate(triggers)
@@ -448,13 +460,30 @@ def render_eval_results(overall_pass, triggers):
         <section class="feedback-flags">
             <div class="feedback-flags-header">
                 <h3>Feedback Flags</h3>
-                <button class="save-button" data-save-feedback type="button">Save</button>
+                <button
+                    class="save-button"
+                    data-save-feedback
+                    data-save-url="{escape(str(feedback_save_url), quote=True)}"
+                    type="button"
+                >
+                    Save
+                </button>
             </div>
             <div class="empty-feedback">No feedback flags yet.</div>
             <div class="feedback-list"></div>
             <div class="save-status" data-save-status></div>
         </section>
 
+        <script type="application/json" data-eval-results>
+            {_json_script_payload({
+                "overall_pass": bool(overall_pass),
+                "triggers": triggers,
+                "source_files": {
+                    "family_application": str(family_app_filepath),
+                    "document_bundle": str(doc_bundle_filepath),
+                },
+            })}
+        </script>
         <script>{_eval_feedback_js()}</script>
         """,
         height=_trigger_count_height(triggers, eval_mode=True),

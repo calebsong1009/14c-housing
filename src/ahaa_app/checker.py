@@ -153,17 +153,22 @@ def check_doc(family_app_filepath, doc_bundle_filepath,
     fired_triggers = [trig for trig in report['triggers'] if bool(trig['fired'])==True]
     
     # add "overall_missing_docs" to each trigger: list of tuple (missing_doc, applies_to_member)
-    # for trig in fired_triggers:
-    #     missing_docs = []
-    #     if bool(trig['requirement_fulfilled']):
-    #         for instance in trig.get('instances', []):
-    #             if bool(instance['fulfilled']) == False:
-    #                 member = instance.get("applies_to_member", "")
-    #                 member = "" if (member is None) or (member == 'null') else member
-    #                 missing_docs.append((instance['missing_doc']))
-    #     trig['overall_missing_docs'] = missing_docs
+    total_missing_docs = []
+    for trig in fired_triggers:
+        missing_docs = []
+        if not bool(trig['requirement_fulfilled']):
+            for instance in trig.get('instances', []):
+                if bool(instance['fulfilled']) == False:
+                    member = instance.get("applies_to_member", "")
+                    member = "" if (member is None) or (member.isin(['null',''])) else (member+' - ')
+                    missing_docs.extend([f'{member}'+doc for doc in instance.get('missing_documents',[])])
+        trig['all_missing_docs'] = missing_docs
+        total_missing_docs.extend(missing_docs)
+    
+    # remove duplicates
+    total_missing_docs = list(set(total_missing_docs))
         
-    return overall_pass, fired_triggers
+    return overall_pass, fired_triggers, total_missing_docs
 
 if __name__ == "__main__":
 

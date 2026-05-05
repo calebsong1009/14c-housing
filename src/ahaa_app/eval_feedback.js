@@ -7,6 +7,19 @@
     const emptyFeedback = document.querySelector(".empty-feedback");
     const saveButton = document.querySelector("[data-save-feedback]");
     const saveStatus = document.querySelector("[data-save-status]");
+    const evalResults = document.querySelector("[data-eval-results]");
+
+    function originalResults() {
+        if (!evalResults) {
+            return { overall_pass: false, triggers: [] };
+        }
+
+        try {
+            return JSON.parse(evalResults.textContent);
+        } catch (error) {
+            return { overall_pass: false, triggers: [] };
+        }
+    }
 
     function escapeHtml(value) {
         return value
@@ -34,6 +47,7 @@
                 const input = document.querySelector(`[data-feedback-input="${feedbackKey}"]`);
 
                 items.push({
+                    key: feedbackKey,
                     title: button.dataset.feedbackTitle,
                     feedback: input ? input.value.trim() : "",
                 });
@@ -65,19 +79,61 @@
     }
 
     function saveFeedbackFlags() {
-        const items = currentFeedbackItems();
+        const results = originalResults();
+        const saveUrl = saveButton ? saveButton.dataset.saveUrl : "";
+        const triggerFeedbackByKey = new Map(
+            triggerFlags.map((button) => {
+                const feedbackKey = button.dataset.feedbackKey;
+                const input = document.querySelector(`[data-feedback-input="${feedbackKey}"]`);
+
+                return [
+                    feedbackKey,
+                    {
+                        flag: button.classList.contains("flagged"),
+                        feedback: input ? input.value.trim() : "",
+                    },
+                ];
+            })
+        );
+        const firedTriggers = (results.triggers || []).map((trigger, index) => ({
+            ...trigger,
+            ...(triggerFeedbackByKey.get(String(index)) || { flag: false, feedback: "" }),
+        }));
         const payload = {
-            savedAt: new Date().toISOString(),
-            items,
+            overall_pass: Boolean(results.overall_pass),
+            overall_flag: Boolean(bundleFlag && bundleFlag.classList.contains("flagged")),
+            overall_feedback: overallFeedback ? overallFeedback.value.trim() : "",
+            fired_triggers: firedTriggers,
+            source_files: results.source_files || {},
         };
 
-        localStorage.setItem("eligibilityCheckerFeedbackFlags", JSON.stringify(payload));
-
         if (saveStatus) {
-            saveStatus.textContent = items.length
-                ? "Saved feedback flags in this browser."
-                : "No feedback flags to save.";
+            saveStatus.textContent = "Saving feedback flags...";
         }
+
+        fetch(saveUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Save failed");
+                }
+                return response.json();
+            })
+            .then(() => {
+                if (saveStatus) {
+                    saveStatus.textContent = "✓ Feedback saved.";
+                }
+            })
+            .catch(() => {
+                if (saveStatus) {
+                    saveStatus.textContent = "Could not save feedback flags.";
+                }
+            });
     }
 
     if (bundleFlag) {
