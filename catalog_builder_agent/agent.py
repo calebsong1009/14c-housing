@@ -341,7 +341,7 @@ def run_catalog_builder(
 
     response = client.messages.create(
         model=model,
-        max_tokens=8192,
+        max_tokens=16384,
         system=[
             {
                 "type": "text",
