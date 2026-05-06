@@ -284,28 +284,51 @@ if eval_mode:
                 key="update_catalog_select",
             )
 
+        saved_feedback_dir = Path(__file__).resolve().parent / "saved_feedback"
+        feedback_folders = sorted(
+            [d.name for d in saved_feedback_dir.iterdir() if d.is_dir()]
+        ) if saved_feedback_dir.exists() else []
+
         with st.form("update_rule_catalog_form"):
-            st.subheader("Upload Feedback Data")
-            st.write(
-                "Upload the flagged user application, supporting document bundle, and the "
-                "output from the compliance engine with feedback notes."
-            )
-            feedback_files = st.file_uploader(
-                "Upload feedback data documents",
-                type=None,
-                accept_multiple_files=True,
-                key="feedback_data_upload",
-            )
+            st.subheader("Saved Feedback Sessions")
+            if feedback_folders:
+                selected_feedback = st.selectbox(
+                    "Select a feedback session to apply.",
+                    options=feedback_folders,
+                )
+            else:
+                st.info("No saved feedback sessions found. Run a compliance check in admin view and save feedback first.")
+                selected_feedback = None
 
             update_rules_clicked = st.form_submit_button("🤖 Update Rule Catalog")
 
         if update_rules_clicked:
             if selected_update_catalog is None:
                 st.error("Please choose a rule catalog before updating.")
-            elif feedback_files is None or len(feedback_files) == 0:
-                st.error("Please upload feedback data before updating the rule catalog.")
+            elif selected_feedback is None:
+                st.error("No feedback sessions available to apply.")
             else:
-                st.success(
-                    f"Ready to update {selected_update_catalog} with "
-                    f"{len(feedback_files)} feedback file(s)."
-                )
+                try:
+                    import sys
+                    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+                    from feedback_agent.agent import run_from_saved_feedback
+
+                    trigger_path, req_path = get_catalog_filepaths(selected_update_catalog)
+                    triggers = json.loads(trigger_path.read_text(encoding="utf-8"))
+                    reqs = json.loads(req_path.read_text(encoding="utf-8"))
+                    folder = saved_feedback_dir / selected_feedback
+
+                    with st.spinner("Running feedback agent..."):
+                        updated_triggers, updated_reqs, analysis = run_from_saved_feedback(
+                            feedback_dir=folder,
+                            trigger_catalog=triggers,
+                            req_catalog=reqs,
+                        )
+
+                    trigger_path.write_text(json.dumps(updated_triggers, indent=2), encoding="utf-8")
+                    req_path.write_text(json.dumps(updated_reqs, indent=2), encoding="utf-8")
+
+                    st.success(f"Rule catalog '{selected_update_catalog}' updated.")
+                    st.write(f"**What changed:** {analysis}")
+                except Exception as exc:
+                    st.exception(exc)
