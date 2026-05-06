@@ -247,6 +247,60 @@ def run_feedback_agent(
 
 
 # ---------------------------------------------------------------------------
+# Bridge: load a saved-feedback folder from the app
+# ---------------------------------------------------------------------------
+
+def run_from_saved_feedback(
+    feedback_dir: str | Path,
+    trigger_catalog: list[dict],
+    req_catalog: list[dict],
+    model: str = "claude-sonnet-4-6",
+) -> tuple[list[dict], list[dict], str]:
+    """
+    Load a saved feedback folder written by the app (family_application.json,
+    document_bundle.json, feedback.json) and run the feedback agent.
+
+    feedback.json is the app's compliance report with reviewer annotations:
+      - overall_feedback: str   (reviewer comment on the overall verdict)
+      - fired_triggers[].flag: bool   (reviewer marked this trigger as wrong)
+      - fired_triggers[].feedback: str  (reviewer comment on that trigger)
+
+    Returns (updated_triggers, updated_reqs, analysis).
+    """
+    folder = Path(feedback_dir)
+    family        = json.loads((folder / "family_application.json").read_text())
+    bundle        = json.loads((folder / "document_bundle.json").read_text())
+    feedback_data = json.loads((folder / "feedback.json").read_text())
+
+    compliance_trace = run_compliance_trace(family, bundle, trigger_catalog, req_catalog)
+
+    # Build a single human_feedback string from overall + per-trigger reviewer notes
+    parts = []
+    overall = (feedback_data.get("overall_feedback") or "").strip()
+    if overall:
+        parts.append(f"Overall reviewer comment: {overall}")
+
+    for trig in feedback_data.get("fired_triggers", []):
+        note = (trig.get("feedback") or "").strip()
+        if trig.get("flag") and note:
+            parts.append(
+                f"Trigger '{trig['trigger_id']}' ({trig.get('description', '')}): {note}"
+            )
+
+    human_feedback = "\n".join(parts)
+
+    return run_feedback_agent(
+        trigger_catalog=trigger_catalog,
+        req_catalog=req_catalog,
+        bundle=bundle,
+        family=family,
+        compliance_trace=compliance_trace,
+        human_feedback=human_feedback,
+        model=model,
+    )
+
+
+# ---------------------------------------------------------------------------
 # CLI entry point
 # ---------------------------------------------------------------------------
 
@@ -256,42 +310,71 @@ def _load(path: str) -> dict | list:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Catalog Feedback Agent")
-    parser.add_argument("--triggers",     required=True)
-    parser.add_argument("--reqs",         required=True)
-    parser.add_argument("--bundle",       required=True)
-    parser.add_argument("--family",       required=True)
-    parser.add_argument("--feedback",     required=True, help="Human feedback string or @path/to/file.txt")
-    parser.add_argument("--out-triggers", default="updated_trigger_catalog.json")
-    parser.add_argument("--out-reqs",     default="updated_req_catalog.json")
-    parser.add_argument("--model",        default="claude-sonnet-4-6")
+    sub = parser.add_subparsers(dest="command")
+
+    # -- from-saved: read a folder the app saved --
+    p_saved = sub.add_parser("from-saved", help="Run from a saved feedback folder")
+    p_saved.add_argument("folder",        help="Path to saved feedback folder")
+    p_saved.add_argument("--triggers",    required=True, help="Path to trigger_catalog.json")
+    p_saved.add_argument("--reqs",        required=True, help="Path to req_catalog.json")
+    p_saved.add_argument("--out-triggers", default="updated_trigger_catalog.json")
+    p_saved.add_argument("--out-reqs",     default="updated_req_catalog.json")
+    p_saved.add_argument("--model",        default="claude-sonnet-4-6")
+
+    # -- manual: supply everything by hand --
+    p_manual = sub.add_parser("manual", help="Run with explicit inputs")
+    p_manual.add_argument("--triggers",     required=True)
+    p_manual.add_argument("--reqs",         required=True)
+    p_manual.add_argument("--bundle",       required=True)
+    p_manual.add_argument("--family",       required=True)
+    p_manual.add_argument("--feedback",     required=True, help="Feedback string or @path/to/file.txt")
+    p_manual.add_argument("--out-triggers", default="updated_trigger_catalog.json")
+    p_manual.add_argument("--out-reqs",     default="updated_req_catalog.json")
+    p_manual.add_argument("--model",        default="claude-sonnet-4-6")
+
     args = parser.parse_args()
 
-    triggers = _load(args.triggers)
-    reqs     = _load(args.reqs)
-    bundle   = _load(args.bundle)
-    family   = _load(args.family)
+    if args.command == "from-saved":
+        triggers = _load(args.triggers)
+        reqs     = _load(args.reqs)
+        print(f"Loading saved feedback from: {args.folder}", flush=True)
+        updated_triggers, updated_reqs, analysis = run_from_saved_feedback(
+            feedback_dir=args.folder,
+            trigger_catalog=triggers,
+            req_catalog=reqs,
+            model=args.model,
+        )
 
-    feedback = args.feedback
-    if feedback.startswith("@"):
-        feedback = Path(feedback[1:]).read_text().strip()
+    elif args.command == "manual":
+        triggers = _load(args.triggers)
+        reqs     = _load(args.reqs)
+        bundle   = _load(args.bundle)
+        family   = _load(args.family)
 
-    trace = run_compliance_trace(family, bundle, triggers, reqs)
+        feedback = args.feedback
+        if feedback.startswith("@"):
+            feedback = Path(feedback[1:]).read_text().strip()
 
-    print(f"Compliance result: {'PASS' if trace['passed'] else 'FAIL'}")
-    failed = [r["instance_label"] for r in trace["requirement_trace"] if not r["satisfied"]]
-    if failed:
-        print(f"Failed requirements: {failed}")
+        trace = run_compliance_trace(family, bundle, triggers, reqs)
+        print(f"Compliance result: {'PASS' if trace['passed'] else 'FAIL'}")
+        failed = [r["instance_label"] for r in trace["requirement_trace"] if not r["satisfied"]]
+        if failed:
+            print(f"Failed requirements: {failed}")
 
-    print("\nRunning feedback agent...", flush=True)
-    updated_triggers, updated_reqs, analysis = run_feedback_agent(
-        trigger_catalog=triggers,
-        req_catalog=reqs,
-        bundle=bundle,
-        family=family,
-        compliance_trace=trace,
-        human_feedback=feedback,
-        model=args.model,
-    )
+        print("\nRunning feedback agent...", flush=True)
+        updated_triggers, updated_reqs, analysis = run_feedback_agent(
+            trigger_catalog=triggers,
+            req_catalog=reqs,
+            bundle=bundle,
+            family=family,
+            compliance_trace=trace,
+            human_feedback=feedback,
+            model=args.model,
+        )
+
+    else:
+        parser.print_help()
+        return
 
     Path(args.out_triggers).write_text(json.dumps(updated_triggers, indent=2))
     Path(args.out_reqs).write_text(json.dumps(updated_reqs, indent=2))
