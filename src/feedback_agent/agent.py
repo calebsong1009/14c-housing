@@ -42,7 +42,8 @@ import os
 
 import anthropic
 
-from compliance import run_compliance_trace
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from feedback_agent.compliance import run_compliance_trace
 
 
 def _load_dotenv() -> None:
