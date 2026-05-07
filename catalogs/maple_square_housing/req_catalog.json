@@ -171,7 +171,7 @@
   },
   {
     "requirement_id": "req_pay_stubs",
-    "description": "Most recent 5 consecutive pay stubs required for all jobs. Advisory: 5 stubs required regardless of pay frequency.",
+    "description": "Most recent 3 consecutive pay stubs required for all jobs.",
     "document_spec": {
       "type": "all_of",
       "children": [
@@ -189,16 +189,6 @@
           "type": "document",
           "document_type": "pay_stub_3.pdf",
           "notes": "3rd most recent pay stub"
-        },
-        {
-          "type": "document",
-          "document_type": "pay_stub_4.pdf",
-          "notes": "4th most recent pay stub"
-        },
-        {
-          "type": "document",
-          "document_type": "pay_stub_5.pdf",
-          "notes": "5th most recent pay stub"
         }
       ]
     },

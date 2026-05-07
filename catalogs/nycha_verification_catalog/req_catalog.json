@@ -1,0 +1,597 @@
+[
+  {
+    "requirement_id": "req_household_member_id",
+    "description": "Government-issued ID for each household member",
+    "document_spec": {
+      "type": "one_of",
+      "children": [
+        {
+          "type": "document",
+          "document_type": "birth_certificate.pdf",
+          "notes": null
+        },
+        {
+          "type": "document",
+          "document_type": "driver_license.pdf",
+          "notes": null
+        },
+        {
+          "type": "document",
+          "document_type": "social_security_card.pdf",
+          "notes": null
+        },
+        {
+          "type": "document",
+          "document_type": "passport.pdf",
+          "notes": null
+        }
+      ]
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 18,
+      "section": "Required Documents item 1",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_section_8_voucher",
+    "description": "Section 8 / housing voucher: voucher copy or PHA letter",
+    "document_spec": {
+      "type": "one_of",
+      "children": [
+        {
+          "type": "document",
+          "document_type": "section_8_housing_voucher.pdf",
+          "notes": null
+        },
+        {
+          "type": "document",
+          "document_type": "public_housing_authority_letter.pdf",
+          "notes": null
+        }
+      ]
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 18,
+      "section": "Required Documents item 2",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_local_preference",
+    "description": "Proof of local preference (lease, utility bill, voter reg.)",
+    "document_spec": {
+      "type": "one_of",
+      "children": [
+        {
+          "type": "document",
+          "document_type": "lease.pdf",
+          "notes": null
+        },
+        {
+          "type": "document",
+          "document_type": "utility_bill.pdf",
+          "notes": null
+        },
+        {
+          "type": "document",
+          "document_type": "voter_registration.pdf",
+          "notes": null
+        }
+      ]
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 18,
+      "section": "Required Documents item 3",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_special_accommodation",
+    "description": "Doctor's letter supporting requested accommodation",
+    "document_spec": {
+      "type": "document",
+      "document_type": "doctors_letter.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 18,
+      "section": "Required Documents item 4",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_pay_stubs",
+    "description": "Three most recent consecutive pay stubs",
+    "document_spec": {
+      "type": "all_of",
+      "children": [
+        {
+          "type": "document",
+          "document_type": "pay_stub_1.pdf",
+          "notes": "3 consecutive \u2014 count is advisory"
+        },
+        {
+          "type": "document",
+          "document_type": "pay_stub_2.pdf",
+          "notes": null
+        },
+        {
+          "type": "document",
+          "document_type": "pay_stub_3.pdf",
+          "notes": null
+        }
+      ]
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 18,
+      "section": "Required Documents item 5",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_employment_offer_letter",
+    "description": "Employment offer letter for jobs started in last 12 months",
+    "document_spec": {
+      "type": "document",
+      "document_type": "employment_offer_letter.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 18,
+      "section": "Required Documents item 5 NOTE",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_benefit_letter",
+    "description": "Benefit letter (Social Security / pension / disability / annuity)",
+    "document_spec": {
+      "type": "document",
+      "document_type": "benefit_letters_and_social_security.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 18,
+      "section": "Required Documents item 6",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_child_support",
+    "description": "Child support / alimony documentation",
+    "document_spec": {
+      "type": "one_of",
+      "children": [
+        {
+          "type": "document",
+          "document_type": "child_support_none_received.pdf",
+          "notes": null
+        },
+        {
+          "type": "all_of",
+          "children": [
+            {
+              "type": "document",
+              "document_type": "child_support_received.pdf",
+              "notes": null
+            },
+            {
+              "type": "document",
+              "document_type": "child_support_court_document.pdf",
+              "notes": null
+            },
+            {
+              "type": "document",
+              "document_type": "divorce_papers.pdf",
+              "notes": null
+            }
+          ]
+        }
+      ]
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 18,
+      "section": "Required Documents item 7",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_self_employment",
+    "description": "Self-employment income/expense statement, last 3 federal returns, 3 months business checking + savings",
+    "document_spec": {
+      "type": "all_of",
+      "children": [
+        {
+          "type": "document",
+          "document_type": "self_employed_income_statement.pdf",
+          "notes": null
+        },
+        {
+          "type": "document",
+          "document_type": "federal_tax_returns_2022.pdf",
+          "notes": null
+        },
+        {
+          "type": "document",
+          "document_type": "federal_tax_returns_2023.pdf",
+          "notes": null
+        },
+        {
+          "type": "document",
+          "document_type": "federal_tax_return_2024.pdf",
+          "notes": null
+        },
+        {
+          "type": "document",
+          "document_type": "last_3_months_business_checking_and_savings_statements.pdf",
+          "notes": null
+        }
+      ]
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 18,
+      "section": "Required Documents item 8",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_federal_tax_return",
+    "description": "2024 federal tax return or IRS non-filing verification",
+    "document_spec": {
+      "type": "one_of",
+      "children": [
+        {
+          "type": "document",
+          "document_type": "federal_tax_return_2024.pdf",
+          "notes": null
+        },
+        {
+          "type": "document",
+          "document_type": "irs_non_filing_verification.pdf",
+          "notes": null
+        }
+      ]
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 19,
+      "section": "Required Documents item 9",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_w2_1099r",
+    "description": "W-2 or 1099-R for 2024",
+    "document_spec": {
+      "type": "one_of",
+      "children": [
+        {
+          "type": "document",
+          "document_type": "w2_2024.pdf",
+          "notes": null
+        },
+        {
+          "type": "document",
+          "document_type": "1099r_2024.pdf",
+          "notes": null
+        }
+      ]
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 19,
+      "section": "Required Documents item 10",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_interest_dividends_income",
+    "description": "Interest, dividends, or net income from real/personal property",
+    "document_spec": {
+      "type": "document",
+      "document_type": "interest_dividends_income_statement.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 19,
+      "section": "Required Documents item 11",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_checking_statement",
+    "description": "Most recent complete checking account statement",
+    "document_spec": {
+      "type": "document",
+      "document_type": "checking_statement_march2025.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 19,
+      "section": "Required Documents item 12 \u2014 Checking",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_prepaid_debit_card_statement",
+    "description": "Pre-paid debit card statement",
+    "document_spec": {
+      "type": "document",
+      "document_type": "prepaid_debit_card_statements.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 19,
+      "section": "Required Documents item 12 \u2014 Pre-paid debit",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_digital_wallet_statement",
+    "description": "Digital wallet statements (Cash App / Venmo / PayPal / Apple Cash)",
+    "document_spec": {
+      "type": "document",
+      "document_type": "digital_wallet_statements.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 19,
+      "section": "Required Documents item 12 \u2014 Digital wallets",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_savings_statement",
+    "description": "Most recent complete savings account statement",
+    "document_spec": {
+      "type": "document",
+      "document_type": "savings_statement_march2025.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 20,
+      "section": "Required Documents item 12 \u2014 Savings",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_revocable_trusts",
+    "description": "Revocable trust statement",
+    "document_spec": {
+      "type": "document",
+      "document_type": "revocable_trusts.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 20,
+      "section": "Required Documents item 12 \u2014 Revocable trusts",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_equity_rental_or_capital_investments",
+    "description": "Equity in rental property or other capital investments",
+    "document_spec": {
+      "type": "document",
+      "document_type": "equity_rental_or_capital_investments.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 20,
+      "section": "Required Documents item 12 \u2014 Equity/rental",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_investment_accounts",
+    "description": "Investment accounts (stocks, bonds, T-bills, CDs, mutual funds, online accounts)",
+    "document_spec": {
+      "type": "document",
+      "document_type": "investment_accounts.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 20,
+      "section": "Required Documents item 12 \u2014 Investments",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_retirement_accounts",
+    "description": "Retirement account statements (IRA / Roth / 401K / 403B)",
+    "document_spec": {
+      "type": "document",
+      "document_type": "retirement_accounts.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 20,
+      "section": "Required Documents item 12 \u2014 Retirement",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_life_insurance_cash_value",
+    "description": "Cash value of whole-life or universal-life insurance",
+    "document_spec": {
+      "type": "document",
+      "document_type": "life_insurance_cash_value.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 20,
+      "section": "Required Documents item 12 \u2014 Life insurance",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_personal_property_investment",
+    "description": "Personal property held as an investment",
+    "document_spec": {
+      "type": "document",
+      "document_type": "personal_property_investments.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 20,
+      "section": "Required Documents item 12 \u2014 Personal property",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_lump_sum_one_time_receipts",
+    "description": "Lump-sum or one-time receipts",
+    "document_spec": {
+      "type": "document",
+      "document_type": "lump_sum_one_time_receipts.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 20,
+      "section": "Required Documents item 12 \u2014 Lump sum",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_student_status_proof",
+    "description": "Letter from school confirming student status",
+    "document_spec": {
+      "type": "document",
+      "document_type": "student_letter_from_school.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 20,
+      "section": "Required Documents item 13",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_appendix_a_eligibility",
+    "description": "HOTMA Appendix A student eligibility checklist (non-Section-8 students)",
+    "document_spec": {
+      "type": "document",
+      "document_type": "appendix_A_eligibility.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 20,
+      "section": "Required Documents item 13 / Appendix A",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_proof_of_pregnancy",
+    "description": "Doctor's letter as proof of pregnancy (unborn member counted in household)",
+    "document_spec": {
+      "type": "document",
+      "document_type": "proof_of_pregnancy.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 20,
+      "section": "Required Documents item 14",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_divorce_or_separation",
+    "description": "Legal documentation of divorce or separation status",
+    "document_spec": {
+      "type": "document",
+      "document_type": "proof_of_divorce.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 20,
+      "section": "Required Documents item 15",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_affidavit_and_disclosure",
+    "description": "Signed Affidavit & Disclosure Form",
+    "document_spec": {
+      "type": "document",
+      "document_type": "affidavit_and_disclosure_form.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 15,
+      "section": "Affidavit & Disclosure Form",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_application_tips",
+    "description": "Signed Application Tips acknowledgement",
+    "document_spec": {
+      "type": "document",
+      "document_type": "application_tips_signed.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 17,
+      "section": "Application Tips",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_release_of_information",
+    "description": "Signed Release of Information Authorization Form",
+    "document_spec": {
+      "type": "document",
+      "document_type": "release_of_information_authorization.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 24,
+      "section": "Release of Information Authorization Form",
+      "quote": null
+    }
+  },
+  {
+    "requirement_id": "req_custody_child_support_affidavit",
+    "description": "Custody & Child Support Affidavit, one per minor",
+    "document_spec": {
+      "type": "document",
+      "document_type": "custody_child_support_affidavit.pdf",
+      "notes": null
+    },
+    "source_reference": {
+      "document": "Maple Square FCFS Application 2026",
+      "page": 25,
+      "section": "Custody & Child Support Affidavit",
+      "quote": null
+    }
+  }
+]

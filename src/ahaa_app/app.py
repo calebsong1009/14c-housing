@@ -285,27 +285,36 @@ if eval_mode:
             )
 
         saved_feedback_dir = Path(__file__).resolve().parent / "saved_feedback"
-        feedback_folders = sorted(
-            [d.name for d in saved_feedback_dir.iterdir() if d.is_dir()]
-        ) if saved_feedback_dir.exists() else []
 
-        with st.form("update_rule_catalog_form"):
-            st.subheader("Saved Feedback Sessions")
-            if feedback_folders:
-                selected_feedback = st.selectbox(
+        # Auto-refreshing fragment: polls saved_feedback/ every 2s so newly-saved
+        # sessions appear in the dropdown without the user having to interact.
+        # Lives outside the form because st.form widgets don't update mid-form.
+        @st.fragment(run_every="2s")
+        def render_feedback_session_selector():
+            folders = sorted(
+                [d.name for d in saved_feedback_dir.iterdir() if d.is_dir()]
+            ) if saved_feedback_dir.exists() else []
+            if folders:
+                st.selectbox(
                     "Select a feedback session to apply.",
-                    options=feedback_folders,
+                    options=folders,
+                    key="selected_feedback_session",
                 )
             else:
                 st.info("No saved feedback sessions found. Run a compliance check in admin view and save feedback first.")
-                selected_feedback = None
+                st.session_state.pop("selected_feedback_session", None)
 
+        st.subheader("Saved Feedback Sessions")
+        render_feedback_session_selector()
+
+        with st.form("update_rule_catalog_form"):
             update_rules_clicked = st.form_submit_button("🤖 Update Rule Catalog")
 
         if update_rules_clicked:
+            selected_feedback = st.session_state.get("selected_feedback_session")
             if selected_update_catalog is None:
                 st.error("Please choose a rule catalog before updating.")
-            elif selected_feedback is None:
+            elif not selected_feedback:
                 st.error("No feedback sessions available to apply.")
             else:
                 try:
